@@ -1,0 +1,14 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "d:\\code\\projects\\games\\chimeragame\\chimeragame\\source\\chimeragame\\chimeragame.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\code\\projects\\games\\chimeragame\\chimeragame\\intermediate\\build\\win64\\chimeragameeditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "d:\\code\\projects\\games\\chimeragame\\chimeragame\\intermediate\\build\\win64\\unrealeditor\\development\\chimeragame\\definitions.chimeragame.h",
+            "d:\\code\\projects\\games\\chimeragame\\chimeragame\\source\\chimeragame\\chimeragame.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

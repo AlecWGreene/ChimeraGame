@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "ChimeraGame",
+			"Path": "D:\\Code\\Projects\\Games\\ChimeraGame\\ChimeraGame\\Source\\ChimeraGame.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "ChimeraGameEditor",
+			"Path": "D:\\Code\\Projects\\Games\\ChimeraGame\\ChimeraGame\\Source\\ChimeraGameEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
