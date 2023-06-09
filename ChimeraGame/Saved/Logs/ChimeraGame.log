@@ -963,3 +963,47 @@ Recommended: 516.25
 [2023.06.09-06.27.18:771][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
 [2023.06.09-06.27.18:776][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
 [2023.06.09-06.27.18:785][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2023.06.09-06.27.23:788][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/StarterContent.upack', mount point: 'root:/'
+[2023.06.09-06.27.23:789][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.23:888][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_FirstPerson.upack', mount point: 'root:/'
+[2023.06.09-06.27.23:888][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.23:923][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_FirstPersonBP.upack', mount point: 'root:/'
+[2023.06.09-06.27.23:923][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.24:014][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_HandheldARBP.upack', mount point: 'root:/'
+[2023.06.09-06.27.24:014][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.24:360][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_ThirdPerson.upack', mount point: 'root:/'
+[2023.06.09-06.27.24:360][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.24:446][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_ThirdPersonBP.upack', mount point: 'root:/'
+[2023.06.09-06.27.24:446][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.24:535][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_TopDown.upack', mount point: 'root:/'
+[2023.06.09-06.27.24:535][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.24:862][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_TopDownBP.upack', mount point: 'root:/'
+[2023.06.09-06.27.24:862][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.24:894][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_VehicleAdvBP.upack', mount point: 'root:/'
+[2023.06.09-06.27.24:894][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.25:265][  0]LogPakFile: Display: Mounted Pak file 'D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_VirtualRealityBP.upack', mount point: 'root:/'
+[2023.06.09-06.27.25:265][  0]LogPakFile: Display: Mount point: 'root:/' is not mounted to a valid Root Path yet, assets in this pak file may not be accessible until a corresponding UFS Mount Point is added through FPackageName::RegisterMountPoint.
+[2023.06.09-06.27.25:265][  0]LogFeaturePack: Error: Error in Feature pack D:/EpicGames/Epic Games/UE_5.0/FeaturePacks/TP_VirtualRealityBP.upack. Failed to parse manifest: Invalid Json Token. Line: 43 Ch: 4
+[2023.06.09-06.27.32:193][  0]LogSlateStyle: Warning: Unable to find Slate Widget Style 'SplitterDark'. Using FSplitterStyle defaults instead.
+[2023.06.09-06.27.32:206][  0]LogSlateStyle: Warning: Unable to find Slate Widget Style 'CheckBox'. Using FCheckBoxStyle defaults instead.
+[2023.06.09-06.27.32:263][  0]LogSlateStyle: Warning: Unable to find Slate Widget Style 'CheckBox'. Using FCheckBoxStyle defaults instead.
+[2023.06.09-06.27.32:263][  0]LogSlateStyle: Warning: Unable to find Slate Widget Style 'CheckBox'. Using FCheckBoxStyle defaults instead.
+[2023.06.09-06.27.32:264][  0]LogSlateStyle: Warning: Unable to find Slate Widget Style 'CheckBox'. Using FCheckBoxStyle defaults instead.
+[2023.06.09-06.27.32:264][  0]LogSlateStyle: Warning: Unable to find Slate Widget Style 'CheckBox'. Using FCheckBoxStyle defaults instead.
+[2023.06.09-06.27.32:264][  0]LogSlateStyle: Warning: Unable to find Slate Widget Style 'CheckBox'. Using FCheckBoxStyle defaults instead.
+[2023.06.09-06.27.32:857][  0]LogSlate: Took 0.059904 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Regular.ttf' (155K)
+[2023.06.09-06.27.33:447][  0]LogSlate: Took 0.045018 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/DroidSansMono.ttf' (77K)
+[2023.06.09-06.27.33:624][  0]LogViewport: Scene viewport resized to 1526x902, mode Windowed.
+[2023.06.09-06.27.34:988][  0]LogSlate: Took 0.079629 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Bold.ttf' (160K)
+[2023.06.09-06.27.39:590][  0]LogStall: Startup...
+[2023.06.09-06.27.39:594][  0]LogStall: Startup complete.
+[2023.06.09-06.27.39:886][  0]LogLoad: (Engine Initialization) Total time: 445.60 seconds
+[2023.06.09-06.27.39:886][  0]LogLoad: (Engine Initialization) Total Blueprint compile time: 0.00 seconds
+[2023.06.09-06.27.40:740][  0]AssetCheck: New page: Asset Save: HDRI_Epic_Courtyard_Daylight
+[2023.06.09-06.27.40:741][  0]LogContentValidation: Display: Validating TextureCube /Game/StarterContent/HDRI/HDRI_Epic_Courtyard_Daylight.HDRI_Epic_Courtyard_Daylight
+[2023.06.09-06.27.40:979][  0]LogAssetRegistry: Asset discovery search completed in 259.4140 seconds
+[2023.06.09-06.27.41:122][  0]LogCollectionManager: Fixed up redirectors for 0 collections in 0.000021 seconds (updated 0 objects)
+[2023.06.09-06.27.41:141][  0]LogContentStreaming: Texture pool size now 1000 MB
+[2023.06.09-06.27.47:479][  1]LogMeshUtilities: Finished distance field build in 1.9s - 21x7x14 sparse distance field, 0.0Mb total, 0.0Mb always loaded, 100% occupied, 1509 triangles, MatineeCam_SM
+[2023.06.09-06.27.47:479][  1]LogMeshUtilities: Finished distance field build in 1.3s - 63x63x63 sparse distance field, 0.4Mb total, 0.0Mb always loaded, 84% occupied, 1322 triangles, EditorSphere
+[2023.06.09-06.27.52:142][ 26]LogMeshUtilities: Finished distance field build in 5.3s - 126x126x126 sparse distance field, 1.9Mb total, 0.1Mb always loaded, 52% occupied, 1322 triangles, EditorSkySphere
