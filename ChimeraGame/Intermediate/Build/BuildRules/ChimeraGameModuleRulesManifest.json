@@ -1,9 +1,0 @@
-{
-	"SourceFiles": [
-		"D:\\Code\\Projects\\Games\\ChimeraGame\\ChimeraGame\\Source\\ChimeraGame\\ChimeraGame.Build.cs",
-		"D:\\Code\\Projects\\Games\\ChimeraGame\\ChimeraGame\\Plugins\\ChimeraGAS\\Source\\ChimeraGAS\\ChimeraGAS.Build.cs",
-		"D:\\Code\\Projects\\Games\\ChimeraGame\\ChimeraGame\\Source\\ChimeraGame.Target.cs",
-		"D:\\Code\\Projects\\Games\\ChimeraGame\\ChimeraGame\\Source\\ChimeraGameEditor.Target.cs"
-	],
-	"EngineVersion": "5.0.3"
-}
