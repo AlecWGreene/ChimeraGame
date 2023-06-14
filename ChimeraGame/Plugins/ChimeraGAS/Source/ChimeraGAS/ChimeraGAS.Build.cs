@@ -25,7 +25,11 @@ public class ChimeraGAS : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core"
+				"Core",
+				"GameplayAbilities",
+				"GameplayTags",
+				"GameplayTasks",
+				"EnhancedInput"
 			}
 			);
 			
@@ -36,10 +40,7 @@ public class ChimeraGAS : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
-				"GameplayAbilities",
-				"GameplayTags",
-				"GameplayTasks"
+				"SlateCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
