@@ -20,13 +20,13 @@ bool UChimeraGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandl
 	{
 		check(ActorInfo);
 
-		const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
 		check(ASC);
 
 		const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
 		checkf(Spec, TEXT("Invalid ability spec for handle %s"), *Handle.ToString())
 
-			if (const UChimeraGameplayAbility* AbilityInstance = Spec->GetPrimaryInstance())
+			if (const UChimeraGameplayAbility* AbilityInstance = Cast<UChimeraGameplayAbility>(Spec->GetPrimaryInstance()))
 			{
 				FGameplayTagContainer LocalSourceTags;
 				if (SourceTags)
@@ -110,13 +110,13 @@ bool UChimeraGameplayAbility::CheckCooldown(const FGameplayAbilitySpecHandle Han
 	{
 		check(ActorInfo);
 
-		const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
 		check(ASC);
 
 		const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
 		checkf(Spec, TEXT("Invalid ability spec for handle %s"), *Handle.ToString())
 
-			if (const UChimeraGameplayAbility* AbilityInstance = Spec->GetPrimaryInstance())
+			if (const UChimeraGameplayAbility* AbilityInstance = Cast<UChimeraGameplayAbility>(Spec->GetPrimaryInstance()))
 			{
 				FGameplayTagContainer OutTags;
 				bool bInstanceCooldown = AbilityInstance->CheckInstanceCooldown(OutTags);
@@ -154,13 +154,13 @@ bool UChimeraGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle,
 	{
 		check(ActorInfo);
 
-		const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
 		check(ASC);
 
 		const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
 		checkf(Spec, TEXT("Invalid ability spec for handle %s"), *Handle.ToString())
 
-		if (const UChimeraGameplayAbility* AbilityInstance = Spec->GetPrimaryInstance())
+		if (const UChimeraGameplayAbility* AbilityInstance = Cast<UChimeraGameplayAbility>(Spec->GetPrimaryInstance()))
 		{
 			FGameplayTagContainer OutTags;
 			bool bInstanceCost = AbilityInstance->CheckInstanceCost(OutTags);
@@ -229,7 +229,7 @@ void UChimeraGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 //	Instance Lifecycle
 /////////////////////////////////////////////////////////////////////
 
-bool UChimeraGameplayAbility::CanActivateInstance_Implementation(const FGameplayTagContainer& SourceTags, const FGameplayTagContainer& TargetTags, FGameplayTagContainer& OptionalRelevantTags)
+bool UChimeraGameplayAbility::CanActivateInstance_Implementation(const FGameplayTagContainer& SourceTags, const FGameplayTagContainer& TargetTags, FGameplayTagContainer& OptionalRelevantTags) const
 {
 	return true;
 }
@@ -238,7 +238,7 @@ void UChimeraGameplayAbility::ActivateInstance_Implementation()
 {
 }
 
-bool UChimeraGameplayAbility::CheckInstanceCooldown_Implementation(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, FGameplayTagContainer& OptionalRelevantTags) const
+bool UChimeraGameplayAbility::CheckInstanceCooldown_Implementation(FGameplayTagContainer& OptionalRelevantTags) const
 {
 	return true;
 }
@@ -247,7 +247,7 @@ void UChimeraGameplayAbility::ApplyInstanceCooldown_Implementation() const
 {
 }
 
-bool UChimeraGameplayAbility::CheckInstanceCost_Implementation(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, FGameplayTagContainer& OptionalRelevantTags) const
+bool UChimeraGameplayAbility::CheckInstanceCost_Implementation(FGameplayTagContainer& OptionalRelevantTags) const
 {
 	return true;
 }

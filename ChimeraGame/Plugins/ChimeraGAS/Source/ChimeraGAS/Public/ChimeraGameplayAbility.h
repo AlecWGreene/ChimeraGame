@@ -31,23 +31,33 @@ public:
 
     /** */
     UFUNCTION(BlueprintNativeEvent)
-    bool CanActivateInstance(const FGameplayTagContainer& SourceTags, const FGameplayTagContainer& TargetTags, FGameplayTagContainer& OptionalRelevantTags);
+    bool CanActivateInstance(const FGameplayTagContainer& SourceTags, const FGameplayTagContainer& TargetTags, FGameplayTagContainer& OptionalRelevantTags) const;
+    bool CanActivateInstance_Implementation(const FGameplayTagContainer& SourceTags, const FGameplayTagContainer& TargetTags, FGameplayTagContainer& OptionalRelevantTags) const;
 
     /** Entry point for all ability logic. */
     UFUNCTION(BlueprintNativeEvent)
     void ActivateInstance();
+    void ActivateInstance_Implementation();
     
     UFUNCTION(BlueprintNativeEvent)
     bool CheckInstanceCooldown(FGameplayTagContainer& OptionalRelevantTags) const;
+    bool CheckInstanceCooldown_Implementation(FGameplayTagContainer& OptionalRelevantTags) const;
+
     
     UFUNCTION(BlueprintNativeEvent)
     void ApplyInstanceCooldown() const;
+    void ApplyInstanceCooldown_Implementation() const;
+
     
     UFUNCTION(BlueprintNativeEvent)
     bool CheckInstanceCost(FGameplayTagContainer& OptionalRelevantTags) const;
+    bool CheckInstanceCost_Implementation(FGameplayTagContainer& OptionalRelevantTags) const;
+
     
     UFUNCTION(BlueprintNativeEvent)
     void ApplyInstanceCost() const;
+    void ApplyInstanceCost_Implementation() const;
+
     
     /** 
     * Hook for logic to run when the ability is cancelled through CancelAbility. Essentially functions as a wrapper for any logic 
@@ -55,6 +65,8 @@ public:
     */
     UFUNCTION(BlueprintNativeEvent)
     void CancelInstance();
+    void CancelInstance_Implementation();
+
     
     /** 
     * EndAbility logic which runs on instances before the ability tags/tasks have been cleaned up.
@@ -65,6 +77,8 @@ public:
     */
     UFUNCTION(BlueprintNativeEvent)
     void EndInstance(bool bWasCancelled);
+    void EndInstance_Implementation(bool bWasCancelled);
+
 
     /**
     * EndAbility logic which runs on instances after the ability tags/tasks have been cleaned up.
@@ -76,6 +90,8 @@ public:
     */
     UFUNCTION(BlueprintNativeEvent)
     void PostEndInstance(bool bWasCancelled);
+    void PostEndInstance_Implementation(bool bWasCancelled);
+
 
     //----- Class Properties -----//
 protected:
