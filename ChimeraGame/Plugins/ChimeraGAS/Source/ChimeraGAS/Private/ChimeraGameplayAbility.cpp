@@ -1,4 +1,6 @@
 #include "ChimeraGameplayAbility.h"
+
+#include "AbilitySystemComponent.h"
 #include "..\Public\ChimeraGameplayAbility.h"
 
 UChimeraGameplayAbility::UChimeraGameplayAbility()
@@ -9,6 +11,52 @@ UChimeraGameplayAbility::UChimeraGameplayAbility()
 /////////////////////////////////////////////////////////////////////
 //	UGameplayAbility Overrides
 /////////////////////////////////////////////////////////////////////
+
+bool UChimeraGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool bSuperCanActivate = Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
+
+	if (IsInstantiated())
+	{
+		check(ActorInfo);
+
+		const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		check(ASC);
+
+		const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
+		checkf(Spec, TEXT("Invalid ability spec for handle %s"), *Handle.ToString())
+
+			if (const UChimeraGameplayAbility* AbilityInstance = Spec->GetPrimaryInstance())
+			{
+				FGameplayTagContainer LocalSourceTags;
+				if (SourceTags)
+				{
+					LocalSourceTags.AppendTags(*SourceTags);
+				}
+
+				FGameplayTagContainer LocalTargetTags;
+				if (TargetTags)
+				{
+					LocalTargetTags.AppendTags(*TargetTags);
+				}
+
+				FGameplayTagContainer OutTags;
+				bool bInstanceCanActivate = AbilityInstance->CanActivateInstance(LocalSourceTags, LocalTargetTags, OutTags);
+				if (OptionalRelevantTags)
+				{
+					OptionalRelevantTags->AppendTags(OutTags);
+				}
+
+				return bSuperCanActivate && bInstanceCanActivate;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Could not get primary ability instance for handle %s"), *Handle.ToString());
+			}
+	}
+
+	return bSuperCanActivate;
+}
 
 void UChimeraGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
 {
@@ -56,24 +104,36 @@ void UChimeraGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 bool UChimeraGameplayAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
-	bool bSuperNotOnCooldown = Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
+	bool bSuperCooldown = Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
 
 	if (IsInstantiated())
 	{
-		// @agreene #ToDo - 2023/06/13 - Update this method to access the ability instance since Check functions are usually run on the CDO.
-		FGameplayTagContainer OutTags;
-		bool bInstanceNotOnCooldown = CheckInstanceCooldown(Handle, *ActorInfo, OutTags);
-		if (OptionalRelevantTags)
-		{
-			OptionalRelevantTags->AppendTags(OutTags);
-		}
+		check(ActorInfo);
 
-		return bSuperNotOnCooldown && bInstanceNotOnCooldown;
+		const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		check(ASC);
+
+		const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
+		checkf(Spec, TEXT("Invalid ability spec for handle %s"), *Handle.ToString())
+
+			if (const UChimeraGameplayAbility* AbilityInstance = Spec->GetPrimaryInstance())
+			{
+				FGameplayTagContainer OutTags;
+				bool bInstanceCooldown = AbilityInstance->CheckInstanceCooldown(OutTags);
+				if (OptionalRelevantTags)
+				{
+					OptionalRelevantTags->AppendTags(OutTags);
+				}
+
+				return bSuperCooldown && bInstanceCooldown;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Could not get primary ability instance for handle %s"), *Handle.ToString());
+			}
 	}
-	else
-	{
-		return bSuperNotOnCooldown;
-	}
+
+	return bSuperCooldown;
 }
 
 void UChimeraGameplayAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
@@ -92,20 +152,32 @@ bool UChimeraGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle,
 
 	if (IsInstantiated())
 	{
-		// @agreene #ToDo - 2023/06/13 - Update this method to access the ability instance since Check functions are usually run on the CDO.
-		FGameplayTagContainer OutTags;
-		bool bInstanceCost = CheckInstanceCost(Handle, *ActorInfo, OutTags);
-		if (OptionalRelevantTags)
-		{
-			OptionalRelevantTags->AppendTags(OutTags);
-		}
+		check(ActorInfo);
 
-		return bSuperCost && bInstanceCost;
+		const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		check(ASC);
+
+		const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
+		checkf(Spec, TEXT("Invalid ability spec for handle %s"), *Handle.ToString())
+
+		if (const UChimeraGameplayAbility* AbilityInstance = Spec->GetPrimaryInstance())
+		{
+			FGameplayTagContainer OutTags;
+			bool bInstanceCost = AbilityInstance->CheckInstanceCost(OutTags);
+			if (OptionalRelevantTags)
+			{
+				OptionalRelevantTags->AppendTags(OutTags);
+			}
+
+			return bSuperCost && bInstanceCost;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Could not get primary ability instance for handle %s"), *Handle.ToString());
+		}
 	}
-	else
-	{
-		return bSuperCost;
-	}
+	
+	return bSuperCost;
 }
 
 void UChimeraGameplayAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
@@ -157,13 +229,18 @@ void UChimeraGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 //	Instance Lifecycle
 /////////////////////////////////////////////////////////////////////
 
+bool UChimeraGameplayAbility::CanActivateInstance_Implementation(const FGameplayTagContainer& SourceTags, const FGameplayTagContainer& TargetTags, FGameplayTagContainer& OptionalRelevantTags)
+{
+	return true;
+}
+
 void UChimeraGameplayAbility::ActivateInstance_Implementation()
 {
 }
 
 bool UChimeraGameplayAbility::CheckInstanceCooldown_Implementation(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, FGameplayTagContainer& OptionalRelevantTags) const
 {
-	return false;
+	return true;
 }
 
 void UChimeraGameplayAbility::ApplyInstanceCooldown_Implementation() const
@@ -172,7 +249,7 @@ void UChimeraGameplayAbility::ApplyInstanceCooldown_Implementation() const
 
 bool UChimeraGameplayAbility::CheckInstanceCost_Implementation(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, FGameplayTagContainer& OptionalRelevantTags) const
 {
-	return false;
+	return true;
 }
 
 void UChimeraGameplayAbility::ApplyInstanceCost_Implementation() const

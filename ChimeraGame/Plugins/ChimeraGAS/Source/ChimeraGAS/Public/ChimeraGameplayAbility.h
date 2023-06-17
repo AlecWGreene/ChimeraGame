@@ -16,6 +16,7 @@ public:
 
     //----- UGameplayAbility Overrides -----//
 public:
+    virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const;
     virtual void PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData = nullptr) override;
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
     virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
@@ -28,18 +29,22 @@ public:
     //----- Instance Lifecycle -----//
 public:
 
+    /** */
+    UFUNCTION(BlueprintNativeEvent)
+    bool CanActivateInstance(const FGameplayTagContainer& SourceTags, const FGameplayTagContainer& TargetTags, FGameplayTagContainer& OptionalRelevantTags);
+
     /** Entry point for all ability logic. */
     UFUNCTION(BlueprintNativeEvent)
     void ActivateInstance();
     
     UFUNCTION(BlueprintNativeEvent)
-    bool CheckInstanceCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, FGameplayTagContainer& OptionalRelevantTags) const;
+    bool CheckInstanceCooldown(FGameplayTagContainer& OptionalRelevantTags) const;
     
     UFUNCTION(BlueprintNativeEvent)
     void ApplyInstanceCooldown() const;
     
     UFUNCTION(BlueprintNativeEvent)
-    bool CheckInstanceCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, FGameplayTagContainer& OptionalRelevantTags) const;
+    bool CheckInstanceCost(FGameplayTagContainer& OptionalRelevantTags) const;
     
     UFUNCTION(BlueprintNativeEvent)
     void ApplyInstanceCost() const;
