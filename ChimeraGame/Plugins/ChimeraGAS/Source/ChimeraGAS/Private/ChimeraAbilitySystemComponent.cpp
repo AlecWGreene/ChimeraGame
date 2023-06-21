@@ -1,7 +1,9 @@
 #include "ChimeraAbilitySystemComponent.h"
 
-#include <ChimeraGAS/Public/ChimeraAbilitySystemGlobals.h>
-#include <ChimeraGAS/Public/ChimeraGameplayAbility.h>
+#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
+#include "ChimeraGAS\Public\ChimeraGameplayAbility.h"
+#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
+#include "ChimeraGAS\Public\ChimeraGASLogCategories.h"
 
 UChimeraAbilitySystemComponent::UChimeraAbilitySystemComponent()
 {
@@ -24,7 +26,7 @@ FGameplayTag UChimeraAbilitySystemComponent::GetInputTagFromSpec(const FGameplay
 		return DynamicInputTags.First();
 	}
 
-	if (const UChimeraGameplayAbility* Ability = Cast<UChimeraGameplayAbility>(Spec.Ability))
+	if (Ability)
 	{
 		return Ability->InputTag;
 	}
@@ -96,6 +98,8 @@ void UChimeraAbilitySystemComponent::AbilityInput_Pressed(FGameplayTag InputTag)
 {
 	if (InputTag.IsValid())
 	{
+		UE_LOG(LogChimeraAbilityInput, Verbose, TEXT("%s pressed"), *InputTag.ToString());
+
 		for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
 		{
 			FGameplayTag SpecInputTag = GetInputTagFromSpec(Spec);
@@ -112,6 +116,8 @@ void UChimeraAbilitySystemComponent::AbilityInput_Released(FGameplayTag InputTag
 {
 	if (InputTag.IsValid())
 	{
+		UE_LOG(LogChimeraAbilityInput, Verbose, TEXT("%s released"), *InputTag.ToString());
+
 		for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
 		{
 			FGameplayTag SpecInputTag = GetInputTagFromSpec(Spec);

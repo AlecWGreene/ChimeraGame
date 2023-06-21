@@ -7,7 +7,7 @@
 UCLASS()
 class CHIMERAGAS_API UChimeraAbilitySystemGlobals : public UAbilitySystemGlobals
 {
-	GENERATED_BODY();
+	GENERATED_BODY()
 
 public:
 
