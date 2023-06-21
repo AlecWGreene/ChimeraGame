@@ -4,6 +4,14 @@
 
 #include "ChimeraGameplayAbility.generated.h"
 
+UENUM()
+enum class EAbilityActivationPolicy : uint8
+{
+    OnGranted,
+    OnInputPressed,
+    WhileInputHeld
+};
+
 UCLASS()
 class CHIMERAGAS_API UChimeraGameplayAbility :
     public UGameplayAbility
@@ -30,6 +38,9 @@ public:
 
     //----- Class Properties -----//
 protected:
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    EAbilityActivationPolicy ActivationPolicy{ EAbilityActivationPolicy::OnInputPressed };
 
     UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (Categories = "Input"))
     FGameplayTag InputTag;
