@@ -8,6 +8,6 @@ public class ChimeraGame : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "ChimeraGAS", "ChimeraInput", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" });
 	}
 }

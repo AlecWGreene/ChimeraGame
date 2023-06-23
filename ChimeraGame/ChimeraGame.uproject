@@ -29,6 +29,14 @@
 		{
 			"Name": "EnhancedInput",
 			"Enabled": true
+		},
+		{
+			"Name": "ChimeraGAS",
+			"Enabled": true
+		},
+		{
+			"Name": "ChimeraInput",
+			"Enabled": false
 		}
 	]
 }
