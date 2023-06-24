@@ -42,7 +42,7 @@ public:
     * @returns The binding handle of any succesfully bound handle, returns 0 if it failed.
     */
     template<class ObjectClass, typename FuncType>
-    TArray<uint32> BindAbilityActions(const UChimeraInputConfig* InputConfig, ObjectClass* Object, FuncType PressedFunc, FuncType ReleasedFunc)
+    TArray<uint32> BindAbilityActions(const UChimeraInputConfig* InputConfig, ObjectClass* Object, FuncType PressedFunc, FuncType ReleasedFunc);
 };
 
 template<class ObjectClass, typename FuncType>
@@ -51,7 +51,7 @@ uint32 UChimeraInputComponent::BindNativeAction(const UChimeraInputConfig* Input
     check(InputConfig);
     if (const UInputAction* InputAction = InputConfig->GetNativeAction(InputTag))
     {
-        return BindAction(InputAction, TriggerEvent, Object, Func);
+        return BindAction(InputAction, TriggerEvent, Object, Func).GetHandle();
     }
 
     // @agreene #Todo - 2023/06/17 - Verify 0 is an invalid action handle
@@ -70,12 +70,12 @@ TArray<uint32> UChimeraInputComponent::BindAbilityActions(const UChimeraInputCon
         {
             if (PressedFunc)
             {
-                OutHandles.Add(BindAction(InputLink.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, InputLink.InputTag));
+                OutHandles.Add(BindAction(InputLink.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, InputLink.InputTag).GetHandle());
             }
 
             if (ReleasedFunc)
             {
-                OutHandles.Add(BindAction(InputLink.InputAction, ETriggerEvent::Released, Object, PressedFunc, InputLink.InputTag));
+                OutHandles.Add(BindAction(InputLink.InputAction, ETriggerEvent::Completed, Object, PressedFunc, InputLink.InputTag).GetHandle());
             }
         }
     }

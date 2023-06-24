@@ -1,5 +1,5 @@
 #include "ChimeraPlayerController.h"
-#include "ChimeraGAS/ChimeraAbilitySystemComponent.h"
+#include "ChimeraGAS/Public/ChimeraAbilitySystemComponent.h"
 
 void AChimeraPlayerController::PostProcessInput(const float DeltaTime, const bool bPaused)
 {

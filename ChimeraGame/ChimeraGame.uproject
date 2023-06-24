@@ -36,7 +36,7 @@
 		},
 		{
 			"Name": "ChimeraInput",
-			"Enabled": false
+			"Enabled": true
 		}
 	]
 }

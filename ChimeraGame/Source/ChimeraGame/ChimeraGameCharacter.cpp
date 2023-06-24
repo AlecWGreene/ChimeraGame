@@ -1,12 +1,19 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ChimeraGameCharacter.h"
+
 #include "Camera/CameraComponent.h"
+#include "ChimeraInputComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "EnhancedInput/Public/EnhancedInputSubsystems.h"
+#include "ChimeraGASFunctionLibrary.h"
+#include "ChimeraAbilitySystemComponent.h"
+#include "GameplayTagContainer.h"
+#include "InputMappingContext.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AChimeraGameCharacter
@@ -54,10 +61,48 @@ AChimeraGameCharacter::AChimeraGameCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
+void AChimeraGameCharacter::Move(const FInputActionValue& InputActionValue)
+{
+
+}
+
 void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
+
+	UChimeraInputComponent* ChimeraInputComp = Cast<UChimeraInputComponent>(PlayerInputComponent);
+	check(ChimeraInputComp);
+
+	APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
+	check(LocalPlayer);
+
+	UEnhancedInputLocalPlayerSubsystem* LPSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(LPSubsystem);
+
+	if (DefaultPlayerInputMappingContext.IsValid())
+	{
+		LPSubsystem->AddMappingContext(DefaultPlayerInputMappingContext.LoadSynchronous(), 0);
+	}
+
+	if (DefaultPlayerInputConfig.IsValid())
+	{
+		const UChimeraInputConfig* DefaultInputConfig = DefaultPlayerInputConfig.LoadSynchronous();
+		check(DefaultInputConfig);
+
+		if (UChimeraAbilitySystemComponent* ASC = UChimeraGASFunctionLibrary::GetChimeraASC(this))
+		{
+			ChimeraInputComp->BindAbilityActions(DefaultInputConfig, ASC, &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
+		}
+
+		ChimeraInputComp->BindNativeAction(DefaultInputConfig, FGameplayTag::RequestGameplayTag(TEXT("")), ETriggerEvent::Triggered, this, &AChimeraGameCharacter::Move);
+	}
+
+	return;
+
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 

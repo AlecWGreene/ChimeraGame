@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "ChimeraGameCharacter.generated.h"
 
+struct FInputActionValue;
+
 UCLASS(config=Game)
 class AChimeraGameCharacter : public ACharacter
 {
@@ -24,6 +26,10 @@ public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
 	float TurnRateGamepad;
+
+protected:
+
+	void Move(const FInputActionValue& InputActionValue);
 
 protected:
 
@@ -64,6 +70,10 @@ public:
 
 	//----- Class Properties -----//
 public:
+	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<class UChimeraInputConfig> DefaultPlayerInputConfig;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<class UInputMappingContext> DefaultPlayerInputMappingContext;
 };
 

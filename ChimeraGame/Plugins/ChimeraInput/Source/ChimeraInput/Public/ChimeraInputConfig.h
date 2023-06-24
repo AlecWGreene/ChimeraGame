@@ -1,7 +1,7 @@
 #pragma once
 
-#include "DataAsset.h"
-
+#include "Engine/DataAsset.h"
+#include "GameplayTagContainer.h"
 #include "ChimeraInputConfig.generated.h"
 
 /** Links an input action to a GameplayTag. */
@@ -17,7 +17,7 @@ public:
 
 	// @agreene #Todo - 2023/06/17 - This Categories value should be a placeholder for the plugin user to specify in config
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(Categories="Input"))
-	struct FGameplayTag InputTag;
+	FGameplayTag InputTag;
 
 public:
 
@@ -42,7 +42,7 @@ public:
 	const class UInputAction* GetNativeAction(FGameplayTag InputTag) const;
 
 	UFUNCTION(BlueprintCallable)
-	const TArray<FChimeraInputLink>& GetAbliityLinks() const;
+	const TArray<FChimeraInputLink>& GetAbilityLinks() const;
 
 protected:
 

@@ -2,7 +2,7 @@
 #include "GameFramework/Actor.h"
 #include "ChimeraAbilitySystemComponent.h"
 
-UChimeraAbilitySystemComponent* UChimeraGASFunctionLibrary::GetASCFromActor(AActor* Actor)
+UChimeraAbilitySystemComponent* UChimeraGASFunctionLibrary::GetChimeraASC(const AActor* Actor)
 {
 	return GetASCFromActor<UChimeraAbilitySystemComponent>(Actor);
 }
