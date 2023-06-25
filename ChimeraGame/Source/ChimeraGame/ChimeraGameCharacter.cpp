@@ -66,6 +66,8 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
 	UChimeraInputComponent* ChimeraInputComp = Cast<UChimeraInputComponent>(PlayerInputComponent);
 	check(ChimeraInputComp);
 
@@ -78,14 +80,13 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	UEnhancedInputLocalPlayerSubsystem* LPSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check(LPSubsystem);
 
-	if (DefaultPlayerInputMappingContext.IsValid())
+	if (const UInputMappingContext* LoadedIMC = DefaultPlayerInputMappingContext.LoadSynchronous())
 	{
-		LPSubsystem->AddMappingContext(DefaultPlayerInputMappingContext.LoadSynchronous(), 0);
+		LPSubsystem->AddMappingContext(LoadedIMC, 0);
 	}
 
-	if (DefaultPlayerInputConfig.IsValid())
+	if (const UChimeraInputConfig* DefaultInputConfig = DefaultPlayerInputConfig.LoadSynchronous())
 	{
-		const UChimeraInputConfig* DefaultInputConfig = DefaultPlayerInputConfig.LoadSynchronous();
 		check(DefaultInputConfig);
 
 		ChimeraInputComp->BindAbilityActions(DefaultInputConfig, AbilitySystemComponent.Get(), &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
