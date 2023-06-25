@@ -16,7 +16,8 @@
 #include "InputMappingContext.h"
 
 //////////////////////////////////////////////////////////////////////////
-// AChimeraGameCharacter
+// Constructor and Engine Events
+//////////////////////////////////////////////////////////////////////////
 
 AChimeraGameCharacter::AChimeraGameCharacter()
 {
@@ -59,12 +60,8 @@ AChimeraGameCharacter::AChimeraGameCharacter()
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Input
-
-void AChimeraGameCharacter::Move(const FInputActionValue& InputActionValue)
-{
-
-}
+// Interface Overrides
+//////////////////////////////////////////////////////////////////////////
 
 void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -98,77 +95,51 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 			ChimeraInputComp->BindAbilityActions(DefaultInputConfig, ASC, &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
 		}
 
-		ChimeraInputComp->BindNativeAction(DefaultInputConfig, FGameplayTag::RequestGameplayTag(TEXT("")), ETriggerEvent::Triggered, this, &AChimeraGameCharacter::Move);
+		if (InputMoveTag.IsValid())
+		{
+			ChimeraInputComp->BindNativeAction(DefaultInputConfig, InputLookTag, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleMoveInput);
+		}
+
+		if (InputLookTag.IsValid())
+		{
+			ChimeraInputComp->BindNativeAction(DefaultInputConfig, InputLookTag, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleLookInput);
+		}
 	}
-
-	return;
-
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AChimeraGameCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("Move Right / Left", this, &AChimeraGameCharacter::MoveRight);
-
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &AChimeraGameCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &AChimeraGameCharacter::LookUpAtRate);
-
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AChimeraGameCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AChimeraGameCharacter::TouchStopped);
 }
 
-void AChimeraGameCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	Jump();
-}
+//////////////////////////////////////////////////////////////////////////
+// Player Input
+//////////////////////////////////////////////////////////////////////////
 
-void AChimeraGameCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
+void AChimeraGameCharacter::HandleMoveInput(const FInputActionValue& InputActionValue)
 {
-	StopJumping();
-}
-
-void AChimeraGameCharacter::TurnAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-}
-
-void AChimeraGameCharacter::LookUpAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-}
-
-void AChimeraGameCharacter::MoveForward(float Value)
-{
-	if ((Controller != nullptr) && (Value != 0.0f))
+	AController* Controller = GetController<AController>();
+	if (!Controller)
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+		UE_LOG(LogTemp, Warning, TEXT("Cannot move with invalid controller."));
+		return;
 	}
+
+	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
+	const FRotator YawRotation = FRotator(0.f, Controller->GetControlRotation().Yaw, 0.f); 
+
+	const FVector ForwardDirection = Input.Y * YawRotation.RotateVector(FVector::ForwardVector);
+	const FVector RightDirection = Input.X * YawRotation.RotateVector(FVector::RightVector);
+
+	AddMovementInput(ForwardDirection + RightDirection, 1.f);
 }
 
-void AChimeraGameCharacter::MoveRight(float Value)
+void AChimeraGameCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+	AController* Controller = GetController<AController>();
+	if (!Controller)
 	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
+		UE_LOG(LogTemp, Warning, TEXT("Cannot look with invalid controller."));
+		return;
 	}
+
+	// @agreene #Note #GamepadInput - 2023/06/24 - If adding gamepad support, this needs to get scaled by UWorld::GetDeltaSeconds
+	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
+	AddControllerYawInput(InputValue.X);
+	AddControllerPitchInput(InputValue.Y);
 }
