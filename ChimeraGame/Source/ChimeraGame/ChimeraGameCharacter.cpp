@@ -11,9 +11,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "ChimeraGASFunctionLibrary.h"
-#include "ChimeraAbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "InputMappingContext.h"
+#include "ChimeraGameTags.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Constructor and Engine Events
@@ -95,15 +95,8 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 			ChimeraInputComp->BindAbilityActions(DefaultInputConfig, ASC, &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
 		}
 
-		if (InputMoveTag.IsValid())
-		{
-			ChimeraInputComp->BindNativeAction(DefaultInputConfig, InputLookTag, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleMoveInput);
-		}
-
-		if (InputLookTag.IsValid())
-		{
-			ChimeraInputComp->BindNativeAction(DefaultInputConfig, InputLookTag, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleLookInput);
-		}
+		ChimeraInputComp->BindNativeAction(DefaultInputConfig, ChimeraTags::InputTag_Move, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleMoveInput);
+		ChimeraInputComp->BindNativeAction(DefaultInputConfig, ChimeraTags::InputTag_Look, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleLookInput);
 	}
 }
 

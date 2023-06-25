@@ -4,19 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "ChimeraAbilitySystemComponent.h"
 #include "ChimeraGameCharacter.generated.h"
 
 struct FInputActionValue;
 
-// @agreene #Todo - 2023/06/24 - Move macro to a separate file
-#define DECLARE_ACTOR_COMPONENT(ComponentClass, ComponentName) \
-	TObjectPtr<class ComponentClass> ComponentName; \
-public: \
-	FORCEINLINE class ComponentClass* Get##ComponentName() const { return ComponentName; } \
-protected:
-
 UCLASS(config=Game)
-class AChimeraGameCharacter : public ACharacter
+class AChimeraGameCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -25,11 +19,21 @@ protected:
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	DECLARE_ACTOR_COMPONENT(USprintArmComponent, CameraBoom);
+	TObjectPtr<class USprintArmComponent> CameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	DECLARE_ACTOR_COMPONENT(UCameraComponent, FollowCamera);
+	TObjectPtr<class UCameraComponent> FollowCamera;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UChimeraAbilitySystemComponent> AbilitySystemComponent;
+
+public:
+
+	class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 
 	//----- Constructor and Engine Events -----//
 public:
@@ -48,15 +52,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<class UInputMappingContext> DefaultPlayerInputMappingContext;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FGameplayTag InputMoveTag;
-	UPROPERTY(Config) FName InputMoveTagName;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FGameplayTag InputLookTag;
-	UPROPERTY(Config) FName InputLookTagName;
-
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 };
-
