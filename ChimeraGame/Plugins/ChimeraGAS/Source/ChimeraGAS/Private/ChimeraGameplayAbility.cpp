@@ -93,6 +93,12 @@ void UChimeraGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 		}
 	}
 
-	// @agreene #Todo #EndAbility - 2023/06/20 - We want a way to make the code above automatically run while also allowing child classes to place logic before and after this Super::EndAbility call.
+	FGameplayAbilityActorInfo AbilityActorInfo = ActorInfo ? *ActorInfo : FGameplayAbilityActorInfo();
+	FGameplayAbilityActivationInfo AbilityActivationInfo = ActivationInfo ? *ActivationInfo : FGameplayAbilityActivationInfo();
+
+	PreEndAbility(Handle, AbilityActorInfo, AbilityActivationInfo, bReplicateEndAbility, bWasCancelled);
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	PostEndAbility(Handle, AbilityActorInfo, AbilityActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

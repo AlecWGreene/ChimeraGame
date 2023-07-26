@@ -105,8 +105,8 @@ void UChimeraAbilitySystemComponent::AbilityInput_Pressed(FGameplayTag InputTag)
 			FGameplayTag SpecInputTag = GetInputTagFromSpec(Spec);
 			if (SpecInputTag.IsValid() && SpecInputTag == InputTag)
 			{
-				InputPressedHandles.Add(Spec.Handle);
-				InputHeldHandles.Add(Spec.Handle);
+				InputPressedHandles.AddUnique(Spec.Handle);
+				InputHeldHandles.AddUnique(Spec.Handle);
 			}
 		}
 	}
@@ -123,7 +123,7 @@ void UChimeraAbilitySystemComponent::AbilityInput_Released(FGameplayTag InputTag
 			FGameplayTag SpecInputTag = GetInputTagFromSpec(Spec);
 			if (SpecInputTag.IsValid() && SpecInputTag == InputTag)
 			{
-				InputReleasedHandles.Add(Spec.Handle);
+				InputReleasedHandles.AddUnique(Spec.Handle);
 				InputHeldHandles.Remove(Spec.Handle);
 			}
 		}
