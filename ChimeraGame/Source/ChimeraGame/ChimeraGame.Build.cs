@@ -15,6 +15,7 @@ public class ChimeraGame : ModuleRules
 			"CoreUObject", 
 			"Engine",
 			"GameplayTags",
+			"GameplayAbilities",
 			"InputCore", 
 			"HeadMountedDisplay", 
 			"EnhancedInput" });

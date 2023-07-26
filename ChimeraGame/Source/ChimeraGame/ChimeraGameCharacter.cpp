@@ -3,17 +3,18 @@
 #include "ChimeraGameCharacter.h"
 
 #include "Camera/CameraComponent.h"
-#include "ChimeraInputComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInput/Public/EnhancedInputSubsystems.h"
-#include "ChimeraGASFunctionLibrary.h"
 #include "GameplayTagContainer.h"
 #include "InputMappingContext.h"
+
 #include "ChimeraGameTags.h"
+#include "ChimeraGASFunctionLibrary.h"
+#include "ChimeraInputComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Constructor and Engine Events
@@ -24,9 +25,6 @@ AChimeraGameCharacter::AChimeraGameCharacter()
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// set our turn rate for input
-	TurnRateGamepad = 50.f;
-
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -35,9 +33,6 @@ AChimeraGameCharacter::AChimeraGameCharacter()
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
-
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
@@ -53,7 +48,10 @@ AChimeraGameCharacter::AChimeraGameCharacter()
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm	
+
+	// Setup AbilitySystemComponent
+	AbilitySystemComponent = CreateDefaultSubobject<UChimeraAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -68,6 +66,8 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
 	UChimeraInputComponent* ChimeraInputComp = Cast<UChimeraInputComponent>(PlayerInputComponent);
 	check(ChimeraInputComp);
 
@@ -80,20 +80,16 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	UEnhancedInputLocalPlayerSubsystem* LPSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check(LPSubsystem);
 
-	if (DefaultPlayerInputMappingContext.IsValid())
+	if (const UInputMappingContext* LoadedIMC = DefaultPlayerInputMappingContext.LoadSynchronous())
 	{
-		LPSubsystem->AddMappingContext(DefaultPlayerInputMappingContext.LoadSynchronous(), 0);
+		LPSubsystem->AddMappingContext(LoadedIMC, 0);
 	}
 
-	if (DefaultPlayerInputConfig.IsValid())
+	if (const UChimeraInputConfig* DefaultInputConfig = DefaultPlayerInputConfig.LoadSynchronous())
 	{
-		const UChimeraInputConfig* DefaultInputConfig = DefaultPlayerInputConfig.LoadSynchronous();
 		check(DefaultInputConfig);
 
-		if (UChimeraAbilitySystemComponent* ASC = UChimeraGASFunctionLibrary::GetChimeraASC(this))
-		{
-			ChimeraInputComp->BindAbilityActions(DefaultInputConfig, ASC, &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
-		}
+		ChimeraInputComp->BindAbilityActions(DefaultInputConfig, AbilitySystemComponent.Get(), &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
 
 		ChimeraInputComp->BindNativeAction(DefaultInputConfig, ChimeraTags::InputTag_Move, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleMoveInput);
 		ChimeraInputComp->BindNativeAction(DefaultInputConfig, ChimeraTags::InputTag_Look, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleLookInput);
@@ -106,31 +102,24 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 void AChimeraGameCharacter::HandleMoveInput(const FInputActionValue& InputActionValue)
 {
-	AController* Controller = GetController<AController>();
-	if (!Controller)
+	AController* CharacterController = GetController<AController>();
+	if (!CharacterController)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot move with invalid controller."));
 		return;
 	}
 
 	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
-	const FRotator YawRotation = FRotator(0.f, Controller->GetControlRotation().Yaw, 0.f); 
+	const FRotator YawRotation = FRotator(0.f, CharacterController->GetControlRotation().Yaw, 0.f);
 
-	const FVector ForwardDirection = Input.Y * YawRotation.RotateVector(FVector::ForwardVector);
-	const FVector RightDirection = Input.X * YawRotation.RotateVector(FVector::RightVector);
+	const FVector ForwardDirection = InputValue.Y * YawRotation.RotateVector(FVector::ForwardVector);
+	const FVector RightDirection = InputValue.X * YawRotation.RotateVector(FVector::RightVector);
 
 	AddMovementInput(ForwardDirection + RightDirection, 1.f);
 }
 
 void AChimeraGameCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
 {
-	AController* Controller = GetController<AController>();
-	if (!Controller)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot look with invalid controller."));
-		return;
-	}
-
 	// @agreene #Note #GamepadInput - 2023/06/24 - If adding gamepad support, this needs to get scaled by UWorld::GetDeltaSeconds
 	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
 	AddControllerYawInput(InputValue.X);
