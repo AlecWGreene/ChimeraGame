@@ -1,3 +1,5 @@
+// Copyright Alec Greene. All Rights Reserved.
+
 #pragma once
 
 #include "GameFramework/PlayerController.h"
@@ -5,7 +7,7 @@
 #include "ChimeraPlayerController.generated.h"
 
 UCLASS()
-class AChimeraPlayerController :
+class CHIMERACORE_API AChimeraPlayerController :
     public APlayerController
 {
     GENERATED_BODY()

@@ -1,3 +1,5 @@
+// Copyright Alec Greene. All Rights Reserved.
+
 #include "ChimeraPlayerController.h"
 #include "ChimeraGAS/Public/ChimeraAbilitySystemComponent.h"
 #include "ChimeraInputComponent.h"

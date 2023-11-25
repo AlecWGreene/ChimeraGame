@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Alec Greene. All Rights Reserved.
 
 #pragma once
 
@@ -6,18 +6,18 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "ChimeraAbilitySystemComponent.h"
-#include "ChimeraGameCharacter.generated.h"
+#include "ChimeraCharacter.generated.h"
 
 struct FInputActionValue;
 
-UCLASS(config=Game)
-class AChimeraGameCharacter : public ACharacter, public IAbilitySystemInterface
+UCLASS(config = Game)
+class CHIMERACORE_API AChimeraCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 	//----- Overrides -----//
 public:
-	AChimeraGameCharacter();
+	AChimeraCharacter();
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
