@@ -1,23 +1,3 @@
-#include "ChimeraInputConfig.h"
-#include "InputAction.h"
-#include "GameplayTagContainer.h"
-
-const UInputAction* UChimeraInputConfig::GetNativeAction(FGameplayTag InputTag) const
-{
-    for (const FChimeraInputLink& InputLink : NativeLinks)
-    {
-        if (InputLink.InputTag == InputTag)
-        {
-            return InputLink.InputAction;
-        }
-    }
-
-    // @agreene #Todo - 2023/06/15 - Add custom log category
-    UE_LOG(LogTemp, Warning, TEXT("Didn't find link in %s for %s"), *GetNameSafe(this), *InputTag.ToString());
-    return nullptr;
-}
-
-const TArray<FChimeraInputLink>& UChimeraInputConfig::GetAbilityLinks() const
-{
-    return AbilityLinks;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:34e74da106be2db99e2f6767c7a0eab1f8d1437039523bca578cecfa3e454f66
+size 660

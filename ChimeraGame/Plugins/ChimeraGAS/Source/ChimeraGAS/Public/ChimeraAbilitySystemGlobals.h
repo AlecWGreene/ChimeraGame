@@ -1,17 +1,3 @@
-#pragma once
-
-#include "AbilitySystemGlobals.h"
-
-#include "ChimeraAbilitySystemGlobals.generated.h"
-
-UCLASS()
-class CHIMERAGAS_API UChimeraAbilitySystemGlobals : public UAbilitySystemGlobals
-{
-	GENERATED_BODY()
-
-public:
-
-	static UChimeraAbilitySystemGlobals& Get() { return dynamic_cast<UChimeraAbilitySystemGlobals&>(UAbilitySystemGlobals::Get()); }
-
-	FGameplayTag InputParentTag;
-};
+version https://git-lfs.github.com/spec/v1
+oid sha256:6440dabbd622af7041d6d628ce97349cbac7d1144b7adf3bc7286f030a62786c
+size 384

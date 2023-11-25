@@ -1,15 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
-#include "ChimeraGameGameMode.h"
-#include "ChimeraGameCharacter.h"
-#include "UObject/ConstructorHelpers.h"
-
-AChimeraGameGameMode::AChimeraGameGameMode()
-{
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
-	if (PlayerPawnBPClass.Class != NULL)
-	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:b534346186d042f9284d7646b537257612d43d37046c7ed005f46444613df330
+size 484

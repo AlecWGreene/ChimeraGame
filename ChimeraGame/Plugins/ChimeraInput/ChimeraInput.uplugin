@@ -1,30 +1,3 @@
-{
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "ChimeraInput",
-	"Description": "Wrapper and automated setup for EnhancedInput",
-	"Category": "Other",
-	"CreatedBy": "Alec Greene",
-	"CreatedByURL": "",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"IsExperimentalVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "ChimeraInput",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "EnhancedInput",
-			"Enabled":  true
-		}
-	]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:50fa12e95a29594572a73618dc7146013f2b56c6ce2ec55d02ab9afbd44e419f
+size 572
