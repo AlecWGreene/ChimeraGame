@@ -2,8 +2,8 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "ChimeraGAS",
-	"Description": "Custom extension of GAS to facilitate building Gameplay features better",
+	"FriendlyName": "ChimeraInput",
+	"Description": "Wrapper and automated setup for EnhancedInput",
 	"Category": "Other",
 	"CreatedBy": "Alec Greene",
 	"CreatedByURL": "",
@@ -16,16 +16,12 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "ChimeraGAS",
+			"Name": "ChimeraInput",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "GameplayAbilities",
-			"Enabled": true
-		},
 		{
 			"Name": "EnhancedInput",
 			"Enabled":  true

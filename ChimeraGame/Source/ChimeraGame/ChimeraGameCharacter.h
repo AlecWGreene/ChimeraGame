@@ -3,63 +3,56 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "ChimeraAbilitySystemComponent.h"
 #include "ChimeraGameCharacter.generated.h"
 
+struct FInputActionValue;
+
 UCLASS(config=Game)
-class AChimeraGameCharacter : public ACharacter
+class AChimeraGameCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
+	//----- Components -----//
+protected:
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	TObjectPtr<class USpringArmComponent> CameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+	TObjectPtr<class UCameraComponent> FollowCamera;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UChimeraAbilitySystemComponent> AbilitySystemComponent;
+
+public:
+
+	class USpringArmComponent* GetCameraBoom() const { return CameraBoom.Get(); }
+	class UCameraComponent* GetFollowCamera() const { return FollowCamera.Get(); }
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return Cast<UAbilitySystemComponent>(AbilitySystemComponent.Get()); }
+
+	//----- Constructor and Engine Events -----//
 public:
 	AChimeraGameCharacter();
 
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
-	float TurnRateGamepad;
-
+	//----- Interface Overrides -----//
 protected:
-
-	/** Called for forwards/backward input */
-	void MoveForward(float Value);
-
-	/** Called for side to side input */
-	void MoveRight(float Value);
-
-	/** 
-	 * Called via input to turn at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
-
-	/**
-	 * Called via input to turn look up/down at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void LookUpAtRate(float Rate);
-
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
-
-protected:
-	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
 
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	//----- Player Input -----//
+protected:
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<class UChimeraInputConfig> DefaultPlayerInputConfig;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<class UInputMappingContext> DefaultPlayerInputMappingContext;
+
+	void HandleMoveInput(const FInputActionValue& InputActionValue);
+	void HandleLookInput(const FInputActionValue& InputActionValue);
 };
-

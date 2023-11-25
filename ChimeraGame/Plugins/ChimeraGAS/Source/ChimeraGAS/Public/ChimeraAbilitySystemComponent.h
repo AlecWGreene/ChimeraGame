@@ -4,13 +4,25 @@
 
 #include "ChimeraAbilitySystemComponent.generated.h"
 
+USTRUCT()
+struct CHIMERAGAS_API FAbilityBufferWindow
+{
+    GENERATED_BODY()
+
+    FAbilityBufferWindow();
+
+    FGameplayTagContainer ListenTags;
+
+    TArray<FGameplayAbilitySpecHandle> BufferedAbilities;
+};
+
 UCLASS()
 class CHIMERAGAS_API UChimeraAbilitySystemComponent :
     public UAbilitySystemComponent
 {
     GENERATED_BODY()
 
-    //----- Constructor and Engine Events -----//
+    //----- Overrides -----//
 public:
     UChimeraAbilitySystemComponent();
 
@@ -27,6 +39,8 @@ protected:
 
     //----- Instance Variables -----//
 public:
+
+    TArray<FAbilityBufferWindow> ActiveBufferWindows;
 
     TArray<FGameplayAbilitySpecHandle> InputPressedHandles;
     TArray<FGameplayAbilitySpecHandle> InputHeldHandles;

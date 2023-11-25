@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class ChimeraGAS : ModuleRules
+public class ChimeraInput : ModuleRules
 {
-	public ChimeraGAS(ReadOnlyTargetRules Target) : base(Target)
+	public ChimeraInput(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -26,10 +26,8 @@ public class ChimeraGAS : ModuleRules
 			new string[]
 			{
 				"Core",
-				"GameplayAbilities",
-				"GameplayTags",
-				"GameplayTasks",
-				"EnhancedInput"
+				"EnhancedInput",
+				"GameplayTags"
 			}
 			);
 			
@@ -39,6 +37,7 @@ public class ChimeraGAS : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
+				"InputCore",
 				"Slate",
 				"SlateCore"
 				// ... add private dependencies that you statically link with here ...	
