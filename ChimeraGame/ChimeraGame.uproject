@@ -31,11 +31,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "ChimeraGAS",
-			"Enabled": true
-		},
-		{
-			"Name": "ChimeraInput",
+			"Name": "ChimeraCore",
 			"Enabled": true
 		}
 	]
