@@ -1,3 +1,56 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:317650905b40be10b369f40c4d49a3e8d1a60787f7922a3bbe13e51858f59be8
-size 1037
+// Copyright Alec Greene. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class ChimeraGAS : ModuleRules
+{
+	public ChimeraGAS(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		
+		PublicIncludePaths.AddRange(
+			new string[] {
+				// ... add public include paths required here ...
+			}
+			);
+				
+		
+		PrivateIncludePaths.AddRange(
+			new string[] {
+				// ... add other private include paths required here ...
+			}
+			);
+			
+		
+		PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"Core",
+				"GameplayAbilities",
+				"GameplayTags",
+				"GameplayTasks",
+				"EnhancedInput"
+			}
+			);
+			
+		
+		PrivateDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"CoreUObject",
+				"Engine",
+				"Slate",
+				"SlateCore"
+				// ... add private dependencies that you statically link with here ...	
+			}
+			);
+		
+		
+		DynamicallyLoadedModuleNames.AddRange(
+			new string[]
+			{
+				// ... add any modules that your module loads dynamically here ...
+			}
+			);
+	}
+}
