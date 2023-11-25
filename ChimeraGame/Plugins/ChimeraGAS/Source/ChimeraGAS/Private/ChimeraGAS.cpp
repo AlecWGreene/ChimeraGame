@@ -1,3 +1,20 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c7d0b8256ed6b7efbdcee64e457350ef82c791dc963aacca4c683d3ae1ba4efd
-size 592
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#include "ChimeraGAS.h"
+
+#define LOCTEXT_NAMESPACE "FChimeraGASModule"
+
+void FChimeraGASModule::StartupModule()
+{
+	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+}
+
+void FChimeraGASModule::ShutdownModule()
+{
+	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
+	// we call this function before unloading the module.
+}
+
+#undef LOCTEXT_NAMESPACE
+	
+IMPLEMENT_MODULE(FChimeraGASModule, ChimeraGAS)

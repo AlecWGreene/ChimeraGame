@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a024bd769a4b34596059d4ef738c97127fddf938da936b6003bcc7e78cc90d45
-size 591
+#pragma once
+
+#include "Engine/DataAsset.h"
+
+#include "CorePlayerInputs.generated.h"
+
+UCLASS()
+class UCorePlayerInputs : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<class UInputAction> MoveForward;
+
+	/** Positive values map to the right direction. */
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<class UInputAction> MoveStrafe;
+
+	/** Positive values map to clockwise turning. */
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<class UInputAction> LookHorizontal;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<class UInputAction> LookVertical;
+};

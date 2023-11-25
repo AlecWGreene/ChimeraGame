@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6f7cc5067260c4e36c1d2ecaaf23eec3e01ff932764c40a5bdedd1a2212a20bd
-size 481
+{
+  "version": "1.0",
+  "components": [
+    "Microsoft.Net.Component.4.6.2.TargetingPack",
+    "Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64",
+    "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+    "Microsoft.VisualStudio.Component.Windows10SDK.22000",
+    "Microsoft.VisualStudio.Workload.CoreEditor",
+    "Microsoft.VisualStudio.Workload.ManagedDesktop",
+    "Microsoft.VisualStudio.Workload.NativeDesktop",
+    "Microsoft.VisualStudio.Workload.NativeGame"
+  ]
+}

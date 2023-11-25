@@ -1,3 +1,42 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:622705d5a5e45d247563d7c568d99f1c0eef7c2729f5c339e9e41f55388887c5
-size 614
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.3",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ChimeraGame",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "AbilitySystemGameFeatureActions",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
+			"Name": "ChimeraGAS",
+			"Enabled": true
+		},
+		{
+			"Name": "ChimeraInput",
+			"Enabled": true
+		}
+	]
+}

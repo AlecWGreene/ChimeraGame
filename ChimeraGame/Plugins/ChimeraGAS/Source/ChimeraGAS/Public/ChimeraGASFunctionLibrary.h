@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:15b3503c0c8dcc93c25895d7e3b496f5c856ceecf24d2344f61035ec578da155
-size 742
+#pragma once
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemGlobals.h"
+#include "ChimeraGASFunctionLibrary.generated.h"
+
+class AActor;
+class UChimeraAbilitySystemComponent;
+
+UCLASS()
+class CHIMERAGAS_API UChimeraGASFunctionLibrary :
+    public UAbilitySystemBlueprintLibrary
+{
+    GENERATED_BODY()
+
+public:
+
+    UFUNCTION(BlueprintCallable)
+    static UChimeraAbilitySystemComponent* GetChimeraASC(const AActor* Actor);
+
+    template<class T>
+    static T* GetASCFromActor(const AActor* Actor);
+};
+
+template<class T>
+inline T* UChimeraGASFunctionLibrary::GetASCFromActor(const AActor* Actor)
+{
+    UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor);
+    return Cast<T>(ASC);
+}

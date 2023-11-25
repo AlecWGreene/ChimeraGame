@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:397fceaa1521006cbfab391bcc0c67c59fa5a1993524691a46e329242dc2c6c8
-size 265
+#pragma once
+
+#include "Logging/LogMacros.h"
+
+CHIMERAGAS_API DECLARE_LOG_CATEGORY_EXTERN(LogChimeraGAS, Log, All);
+CHIMERAGAS_API DECLARE_LOG_CATEGORY_EXTERN(LogChimeraAbility, Log, All);
+CHIMERAGAS_API DECLARE_LOG_CATEGORY_EXTERN(LogChimeraAbilityInput, Log, All);
