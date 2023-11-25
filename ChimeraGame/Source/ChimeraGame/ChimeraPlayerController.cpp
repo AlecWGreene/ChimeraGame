@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0c57a379a29b8203435ee6a069a31c9273feeffc047bc3d8a0c0628ed3a36b24
-size 352
+#include "ChimeraPlayerController.h"
+#include "ChimeraGAS/Public/ChimeraAbilitySystemComponent.h"
+#include "ChimeraInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogChimeraPlayerController, Log, All);
+
+void AChimeraPlayerController::PostProcessInput(const float DeltaTime, const bool bPaused)
+{
+	UChimeraAbilitySystemComponent* ASC = nullptr;
+	if (ASC)
+	{
+		ASC->ProcessAbilityInput(DeltaTime, bPaused);
+	}
+
+	Super::PostProcessInput(DeltaTime, bPaused);
+}

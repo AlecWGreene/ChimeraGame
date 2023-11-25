@@ -1,3 +1,25 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fa4d5129c7b2b7604658c5f5f4feb3d7e42ba178654269e30a5b4fc9b20ff976
-size 340
+#pragma once
+
+#include "GameFramework/PlayerController.h"
+
+#include "ChimeraPlayerController.generated.h"
+
+UCLASS()
+class AChimeraPlayerController :
+    public APlayerController
+{
+    GENERATED_BODY()
+
+    //----- APlayerController Overrides -----//
+public:
+    virtual void PostProcessInput(const float DeltaTime, const bool bPaused);
+
+    //----- Class Settings -----//
+public:
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<const class UChimeraInputConfig> DefaultInputMappingConfig;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+    TArray<TObjectPtr<const class UInputMappingContext>> DefaultInputMappingContexts;
+};
+
