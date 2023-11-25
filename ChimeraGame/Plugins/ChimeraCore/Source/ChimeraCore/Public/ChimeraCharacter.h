@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Alec Greene. All Rights Reserved.
 
 #pragma once
 
@@ -6,14 +6,21 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "ChimeraAbilitySystemComponent.h"
-#include "ChimeraGameCharacter.generated.h"
+#include "ChimeraCharacter.generated.h"
 
 struct FInputActionValue;
 
-UCLASS(config=Game)
-class AChimeraGameCharacter : public ACharacter, public IAbilitySystemInterface
+UCLASS(config = Game)
+class CHIMERACORE_API AChimeraCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
+
+	//----- Overrides -----//
+public:
+	AChimeraCharacter();
+
+protected:
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//----- Components -----//
 protected:
@@ -36,22 +43,8 @@ public:
 	class UCameraComponent* GetFollowCamera() const { return FollowCamera.Get(); }
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return Cast<UAbilitySystemComponent>(AbilitySystemComponent.Get()); }
 
-	//----- Constructor and Engine Events -----//
-public:
-	AChimeraGameCharacter();
-
-	//----- Interface Overrides -----//
-protected:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	//----- Player Input -----//
 protected:
-
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<class UChimeraInputConfig> DefaultPlayerInputConfig;
-
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<class UInputMappingContext> DefaultPlayerInputMappingContext;
 
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
 	void HandleLookInput(const FInputActionValue& InputActionValue);

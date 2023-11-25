@@ -1,6 +1,6 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Alec Greene. All Rights Reserved.
 
-#include "ChimeraGameCharacter.h"
+#include "ChimeraCharacter.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -12,16 +12,21 @@
 #include "GameplayTagContainer.h"
 #include "InputMappingContext.h"
 
-#include "ChimeraGameTags.h"
+#include "ChimeraCoreTags.h"
 #include "ChimeraGASFunctionLibrary.h"
 #include "ChimeraInputComponent.h"
+#include "ChimeraPlayerController.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogChimeraCharacter, Log, All);
 
 //////////////////////////////////////////////////////////////////////////
-// Constructor and Engine Events
+// Overrides
 //////////////////////////////////////////////////////////////////////////
 
-AChimeraGameCharacter::AChimeraGameCharacter()
+AChimeraCharacter::AChimeraCharacter()
 {
+	// agreene 2023/11/25 - #Todo #Character all this should be tunable
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -57,11 +62,7 @@ AChimeraGameCharacter::AChimeraGameCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Interface Overrides
-//////////////////////////////////////////////////////////////////////////
-
-void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void AChimeraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
@@ -71,7 +72,7 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	UChimeraInputComponent* ChimeraInputComp = Cast<UChimeraInputComponent>(PlayerInputComponent);
 	check(ChimeraInputComp);
 
-	APlayerController* PC = GetController<APlayerController>();
+	AChimeraPlayerController* PC = GetController<AChimeraPlayerController>();
 	check(PC);
 
 	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
@@ -80,19 +81,26 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	UEnhancedInputLocalPlayerSubsystem* LPSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check(LPSubsystem);
 
-	if (const UInputMappingContext* LoadedIMC = DefaultPlayerInputMappingContext.LoadSynchronous())
+	for (const UInputMappingContext* DefaultIMC : PC->DefaultInputMappingContexts)
 	{
-		LPSubsystem->AddMappingContext(LoadedIMC, 0);
+		if (!ensureAlwaysMsgf(DefaultIMC, TEXT("Invalid default InputMappingContext.")))
+		{
+			continue;
+		}
+
+		LPSubsystem->AddMappingContext(DefaultIMC, 0);
 	}
 
-	if (const UChimeraInputConfig* DefaultInputConfig = DefaultPlayerInputConfig.LoadSynchronous())
+	if (PC->DefaultInputMappingConfig)
 	{
-		check(DefaultInputConfig);
+		ChimeraInputComp->BindAbilityActions(PC->DefaultInputMappingConfig, AbilitySystemComponent.Get(), &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
 
-		ChimeraInputComp->BindAbilityActions(DefaultInputConfig, AbilitySystemComponent.Get(), &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
-
-		ChimeraInputComp->BindNativeAction(DefaultInputConfig, ChimeraTags::InputTag_Move, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleMoveInput);
-		ChimeraInputComp->BindNativeAction(DefaultInputConfig, ChimeraTags::InputTag_Look, ETriggerEvent::Triggered, this, &AChimeraGameCharacter::HandleLookInput);
+		ChimeraInputComp->BindNativeAction(PC->DefaultInputMappingConfig, ChimeraCoreTags::InputTag_Move, ETriggerEvent::Triggered, this, &AChimeraCharacter::HandleMoveInput);
+		ChimeraInputComp->BindNativeAction(PC->DefaultInputMappingConfig, ChimeraCoreTags::InputTag_Look, ETriggerEvent::Triggered, this, &AChimeraCharacter::HandleLookInput);
+	}
+	else
+	{
+		UE_LOG(LogChimeraCharacter, Error, TEXT("Invalid default InputMappingConfig."));
 	}
 }
 
@@ -100,7 +108,7 @@ void AChimeraGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 // Player Input
 //////////////////////////////////////////////////////////////////////////
 
-void AChimeraGameCharacter::HandleMoveInput(const FInputActionValue& InputActionValue)
+void AChimeraCharacter::HandleMoveInput(const FInputActionValue& InputActionValue)
 {
 	AController* CharacterController = GetController<AController>();
 	if (!CharacterController)
@@ -118,9 +126,9 @@ void AChimeraGameCharacter::HandleMoveInput(const FInputActionValue& InputAction
 	AddMovementInput(ForwardDirection + RightDirection, 1.f);
 }
 
-void AChimeraGameCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
+void AChimeraCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
 {
-	// @agreene #Note #GamepadInput - 2023/06/24 - If adding gamepad support, this needs to get scaled by UWorld::GetDeltaSeconds
+	// @agreene 2023/06/24 -- #Note #GamepadInput If adding gamepad support, this needs to get scaled by UWorld::GetDeltaSeconds
 	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
 	AddControllerYawInput(InputValue.X);
 	AddControllerPitchInput(InputValue.Y);
