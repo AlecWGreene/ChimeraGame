@@ -6,7 +6,7 @@
 
 #include "ChimeraPlayerController.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class CHIMERACORE_API AChimeraPlayerController :
     public APlayerController
 {

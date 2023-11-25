@@ -10,7 +10,7 @@
 
 struct FInputActionValue;
 
-UCLASS(config = Game)
+UCLASS(Blueprintable, BlueprintType, config = Game)
 class CHIMERACORE_API AChimeraCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
