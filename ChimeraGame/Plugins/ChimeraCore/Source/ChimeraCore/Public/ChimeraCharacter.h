@@ -48,4 +48,14 @@ protected:
 
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
 	void HandleLookInput(const FInputActionValue& InputActionValue);
+
+	//----- Animation -----//
+protected:
+
+	UFUNCTION(BlueprintPure)
+	virtual const class UChimeraAnimSet* GetAnimSetForMesh(const USkeletalMeshComponent* InMesh) const;
+
+	/** Looks up the montage using the tag and the anim set for the provided mesh. Defaults to GetMesh when Mesh is not provided.*/
+	UFUNCTION(BlueprintPure, meta = (Categories = "Anim.Montage"))
+	virtual const UAnimMontage* GetMontageByTag(FGameplayTag MontageTag, USkeletalMeshComponent* InMesh = nullptr) const;
 };

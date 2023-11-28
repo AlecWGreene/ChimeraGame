@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0e96c9b4f03304159a1f5dbf5f06a19de8e29b20a89002f5e15206164d39cc68
-size 486
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class ChimeraGame : ModuleRules
+{
+	public ChimeraGame(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core", 
+			"ChimeraCore",
+			"ChimeraGAS", 
+			"ChimeraInput", 
+			"CoreUObject", 
+			"Engine",
+			"GameplayTags",
+			"GameplayAbilities",
+			"InputCore", 
+			"HeadMountedDisplay", 
+			"EnhancedInput" });
+	}
+}

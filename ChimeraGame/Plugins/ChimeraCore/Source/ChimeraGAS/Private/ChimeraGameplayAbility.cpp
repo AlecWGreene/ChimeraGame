@@ -14,16 +14,6 @@ UChimeraGameplayAbility::UChimeraGameplayAbility()
 //	UGameplayAbility Overrides
 /////////////////////////////////////////////////////////////////////
 
-bool UChimeraGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
-{
-	return Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
-}
-
-void UChimeraGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
-{
-	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
-}
-
 void UChimeraGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	// @agreene #Note - 2023/07/12 - Coped from UGameplayAbility::ActivateAbility and modified so CommitAbility isn't automatically called.
@@ -49,31 +39,6 @@ void UChimeraGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 	}
 
 	// @agreene #ToDo - 2023/07/12 - Custom logic will go in here, but not sure how to handle the BP ActivateAbility pipeline.
-}
-
-bool UChimeraGameplayAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const
-{
-	return Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
-}
-
-void UChimeraGameplayAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
-{
-	Super::ApplyCooldown(Handle, ActorInfo, ActivationInfo);
-}
-
-bool UChimeraGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const
-{
-	return Super::CheckCost(Handle, ActorInfo, OptionalRelevantTags);
-}
-
-void UChimeraGameplayAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
-{
-	Super::ApplyCooldown(Handle, ActorInfo, ActivationInfo);
-}
-
-void UChimeraGameplayAbility::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
-{
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
 
 void UChimeraGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

@@ -12,6 +12,7 @@
 #include "GameplayTagContainer.h"
 #include "InputMappingContext.h"
 
+#include "ChimeraAnimSet.h"
 #include "ChimeraCoreTags.h"
 #include "ChimeraGASFunctionLibrary.h"
 #include "ChimeraInputComponent.h"
@@ -132,4 +133,30 @@ void AChimeraCharacter::HandleLookInput(const FInputActionValue& InputActionValu
 	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
 	AddControllerYawInput(InputValue.X);
 	AddControllerPitchInput(InputValue.Y);
+}
+
+const UChimeraAnimSet* AChimeraCharacter::GetAnimSetForMesh(const USkeletalMeshComponent* InMesh) const
+{
+	return nullptr;
+}
+
+const UAnimMontage* AChimeraCharacter::GetMontageByTag(FGameplayTag MontageTag, USkeletalMeshComponent* InMesh /*= nullptr*/) const
+{
+	if (const UChimeraAnimSet* AnimSet = GetAnimSetForMesh(InMesh == nullptr ? GetMesh() : InMesh))
+	{
+		if (const TObjectPtr<const UAnimMontage>* MontageEntry = AnimSet->Montages.Find(MontageTag))
+		{
+			return *MontageEntry;
+		}
+		else
+		{
+			UE_LOG(LogChimeraCharacter, Warning, TEXT("AnimSet %s did not have montage %s"), *GetNameSafe(AnimSet), *MontageTag.ToString());
+		}
+	}
+	else
+	{
+		UE_LOG(LogChimeraCharacter, Error, TEXT("Failed to get AnimSet for mesh %s"), *GetNameSafe(InMesh));
+	}
+
+	return nullptr;
 }
