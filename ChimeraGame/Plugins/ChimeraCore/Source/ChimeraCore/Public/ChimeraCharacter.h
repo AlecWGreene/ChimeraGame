@@ -46,6 +46,8 @@ public:
 	//----- Player Input -----//
 protected:
 
+	void HandleInputSettingsLoaded(class UInputComponent* PlayerInputComponent);
+
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 

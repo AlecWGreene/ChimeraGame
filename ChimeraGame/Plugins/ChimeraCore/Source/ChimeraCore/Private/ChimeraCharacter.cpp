@@ -16,6 +16,7 @@
 #include "ChimeraCoreTags.h"
 #include "ChimeraGASFunctionLibrary.h"
 #include "ChimeraInputComponent.h"
+#include "ChimeraInputSettings.h"
 #include "ChimeraPlayerController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogChimeraCharacter, Log, All);
@@ -63,15 +64,12 @@ AChimeraCharacter::AChimeraCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void AChimeraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void AChimeraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	UChimeraInputComponent* ChimeraInputComp = Cast<UChimeraInputComponent>(PlayerInputComponent);
-	check(ChimeraInputComp);
 
 	AChimeraPlayerController* PC = GetController<AChimeraPlayerController>();
 	check(PC);
@@ -92,29 +90,46 @@ void AChimeraCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 		LPSubsystem->AddMappingContext(DefaultIMC, 0);
 	}
 
-	if (PC->DefaultInputMappingConfig)
-	{
-		ChimeraInputComp->BindAbilityActions(PC->DefaultInputMappingConfig, AbilitySystemComponent.Get(), &UChimeraAbilitySystemComponent::AbilityInput_Pressed, &UChimeraAbilitySystemComponent::AbilityInput_Released);
+	UChimeraInputSettings* InputSettings = GetMutableDefault<UChimeraInputSettings>();
+	check(InputSettings);
 
-		ChimeraInputComp->BindNativeAction(PC->DefaultInputMappingConfig, ChimeraCoreTags::InputTag_Move, ETriggerEvent::Triggered, this, &AChimeraCharacter::HandleMoveInput);
-		ChimeraInputComp->BindNativeAction(PC->DefaultInputMappingConfig, ChimeraCoreTags::InputTag_Look, ETriggerEvent::Triggered, this, &AChimeraCharacter::HandleLookInput);
-	}
-	else
-	{
-		UE_LOG(LogChimeraCharacter, Error, TEXT("Invalid default InputMappingConfig."));
-	}
+	InputSettings->EnsureLoaded(FStreamableDelegate::CreateUObject(this, &AChimeraCharacter::HandleInputSettingsLoaded, PlayerInputComponent));
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Player Input
 //////////////////////////////////////////////////////////////////////////
 
+void AChimeraCharacter::HandleInputSettingsLoaded(UInputComponent* PlayerInputComponent)
+{
+	UChimeraInputComponent* ChimeraInputComp = Cast<UChimeraInputComponent>(PlayerInputComponent);
+	check(ChimeraInputComp);
+
+	if (const UInputAction* MoveAction = UChimeraInputSettings::GetAction(ChimeraCoreTags::InputTag_Move))
+	{
+		ChimeraInputComp->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AChimeraCharacter::HandleMoveInput);
+	}
+	else
+	{
+		UE_LOG(LogChimeraCharacter, Error, TEXT("Failed to bind to move action."));
+	}
+
+	if (const UInputAction* LookAction = UChimeraInputSettings::GetAction(ChimeraCoreTags::InputTag_Look))
+	{
+		ChimeraInputComp->BindAction(LookAction, ETriggerEvent::Triggered, this, &AChimeraCharacter::HandleLookInput);
+	}
+	else
+	{
+		UE_LOG(LogChimeraCharacter, Error, TEXT("Failed to bind to look action."));
+	}
+}
+
 void AChimeraCharacter::HandleMoveInput(const FInputActionValue& InputActionValue)
 {
 	AController* CharacterController = GetController<AController>();
 	if (!CharacterController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot move with invalid controller."));
+		UE_LOG(LogChimeraCharacter, Warning, TEXT("Cannot move with invalid controller."));
 		return;
 	}
 

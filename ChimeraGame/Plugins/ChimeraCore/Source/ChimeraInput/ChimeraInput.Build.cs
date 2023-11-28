@@ -26,6 +26,7 @@ public class ChimeraInput : ModuleRules
 			new string[]
 			{
 				"Core",
+				"DeveloperSettings",
 				"EnhancedInput",
 				"GameplayTags"
 			}

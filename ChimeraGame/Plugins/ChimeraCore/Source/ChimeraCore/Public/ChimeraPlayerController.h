@@ -18,8 +18,6 @@ public:
 
     //----- Class Settings -----//
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-    TObjectPtr<const class UChimeraInputConfig> DefaultInputMappingConfig;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
     TArray<TObjectPtr<const class UInputMappingContext>> DefaultInputMappingContexts;
