@@ -71,6 +71,8 @@ void AChimeraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	AbilitySystemComponent->BindToInputComponent(PlayerInputComponent);
+
 	AChimeraPlayerController* PC = GetController<AChimeraPlayerController>();
 	check(PC);
 

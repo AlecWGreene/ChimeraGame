@@ -9,7 +9,7 @@
 
 class UEnhancedInputLocalPlayerSubsystem;
 
-UCLASS()
+UCLASS(BlueprintType)
 class CHIMERAINPUT_API UChimeraInputComponent :
     public UEnhancedInputComponent
 {

@@ -7,14 +7,3 @@
 #include "InputMappingContext.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogChimeraPlayerController, Log, All);
-
-void AChimeraPlayerController::PostProcessInput(const float DeltaTime, const bool bPaused)
-{
-	UChimeraAbilitySystemComponent* ASC = nullptr;
-	if (ASC)
-	{
-		ASC->ProcessAbilityInput(DeltaTime, bPaused);
-	}
-
-	Super::PostProcessInput(DeltaTime, bPaused);
-}

@@ -14,7 +14,6 @@ class CHIMERACORE_API AChimeraPlayerController :
 
     //----- APlayerController Overrides -----//
 public:
-    virtual void PostProcessInput(const float DeltaTime, const bool bPaused);
 
     //----- Class Settings -----//
 public:
