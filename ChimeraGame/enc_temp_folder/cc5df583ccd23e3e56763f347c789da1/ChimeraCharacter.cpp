@@ -133,9 +133,13 @@ void AChimeraCharacter::HandleMoveInput(const FInputActionValue& InputActionValu
 		return;
 	}
 
-	const FVector InputValue = InputActionValue.Get<FVector>();
-	const FRotator ControlRotation = FRotator(0.f, CharacterController->GetControlRotation().Yaw, 0.f);
-	AddMovementInput(ControlRotation.RotateVector(InputValue), 1.f);
+	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
+	const FRotator YawRotation = FRotator(0.f, CharacterController->GetControlRotation().Yaw, 0.f);
+
+	const FVector ForwardDirection = InputValue.Y * YawRotation.RotateVector(FVector::ForwardVector);
+	const FVector RightDirection = InputValue.X * YawRotation.RotateVector(FVector::RightVector);
+
+	AddMovementInput(ForwardDirection + RightDirection, 1.f);
 }
 
 void AChimeraCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
@@ -143,7 +147,7 @@ void AChimeraCharacter::HandleLookInput(const FInputActionValue& InputActionValu
 	// @agreene 2023/06/24 -- #Note #GamepadInput If adding gamepad support, this needs to get scaled by UWorld::GetDeltaSeconds
 	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
 	AddControllerYawInput(InputValue.X);
-	AddControllerPitchInput(-InputValue.Y);
+	AddControllerPitchInput(InputValue.Y);
 }
 
 const UChimeraAnimSet* AChimeraCharacter::GetAnimSetForMesh(const USkeletalMeshComponent* InMesh) const
