@@ -74,4 +74,4 @@ ChimeraGame/Plugins/*/Intermediate/*
 ChimeraGame/DerivedDataCache/*
 
 # Misc
-enc_temp_folder/*
+ChimeraGame/enc_temp_folder/*

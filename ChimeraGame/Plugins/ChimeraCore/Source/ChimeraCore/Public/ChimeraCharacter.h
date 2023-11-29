@@ -55,9 +55,14 @@ protected:
 protected:
 
 	UFUNCTION(BlueprintPure)
-	virtual const class UChimeraAnimSet* GetAnimSetForMesh(FGameplayTag AnimSetTag, const USkeletalMeshComponent* InMesh) const;
+	virtual const class UChimeraAnimSet* GetAnimSetForMesh( 
+		UPARAM(meta = (Categories = "Anim.Set")) FGameplayTag AnimSetTag, 
+		const USkeletalMeshComponent* InMesh) const;
 
 	/** Looks up the montage using the tag and the anim set for the provided mesh. Defaults to GetMesh when Mesh is not provided.*/
-	UFUNCTION(BlueprintPure, meta = (Categories = "Anim.Montage"))
-	virtual const UAnimMontage* GetMontageByTag(FGameplayTag MontageTag, FGameplayTag AnimSetTag = FGameplayTag(), USkeletalMeshComponent* InMesh = nullptr) const;
+	UFUNCTION(BlueprintPure)
+	virtual const UAnimMontage* GetMontageByTag(
+		UPARAM(meta = (Categories = "Anim.Montage")) FGameplayTag MontageTag, 
+		UPARAM(meta = (Categories = "Anim.Set")) FGameplayTag AnimSetTag = FGameplayTag(), 
+		USkeletalMeshComponent* InMesh = nullptr) const;
 };
