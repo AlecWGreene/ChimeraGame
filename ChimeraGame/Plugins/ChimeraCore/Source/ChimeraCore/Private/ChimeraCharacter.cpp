@@ -71,6 +71,8 @@ void AChimeraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	AbilitySystemComponent->BindToInputComponent(PlayerInputComponent);
+
 	AChimeraPlayerController* PC = GetController<AChimeraPlayerController>();
 	check(PC);
 
@@ -133,13 +135,9 @@ void AChimeraCharacter::HandleMoveInput(const FInputActionValue& InputActionValu
 		return;
 	}
 
-	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
-	const FRotator YawRotation = FRotator(0.f, CharacterController->GetControlRotation().Yaw, 0.f);
-
-	const FVector ForwardDirection = InputValue.Y * YawRotation.RotateVector(FVector::ForwardVector);
-	const FVector RightDirection = InputValue.X * YawRotation.RotateVector(FVector::RightVector);
-
-	AddMovementInput(ForwardDirection + RightDirection, 1.f);
+	const FVector InputValue = InputActionValue.Get<FVector>();
+	const FRotator ControlRotation = FRotator(0.f, CharacterController->GetControlRotation().Yaw, 0.f);
+	AddMovementInput(ControlRotation.RotateVector(InputValue), 1.f);
 }
 
 void AChimeraCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
@@ -147,17 +145,17 @@ void AChimeraCharacter::HandleLookInput(const FInputActionValue& InputActionValu
 	// @agreene 2023/06/24 -- #Note #GamepadInput If adding gamepad support, this needs to get scaled by UWorld::GetDeltaSeconds
 	const FVector2D InputValue = InputActionValue.Get<FVector2D>();
 	AddControllerYawInput(InputValue.X);
-	AddControllerPitchInput(InputValue.Y);
+	AddControllerPitchInput(-InputValue.Y);
 }
 
-const UChimeraAnimSet* AChimeraCharacter::GetAnimSetForMesh(const USkeletalMeshComponent* InMesh) const
+const UChimeraAnimSet* AChimeraCharacter::GetAnimSetForMesh(FGameplayTag AnimSetTag, const USkeletalMeshComponent* InMesh) const
 {
 	return nullptr;
 }
 
-const UAnimMontage* AChimeraCharacter::GetMontageByTag(FGameplayTag MontageTag, USkeletalMeshComponent* InMesh /*= nullptr*/) const
+const UAnimMontage* AChimeraCharacter::GetMontageByTag(FGameplayTag MontageTag, FGameplayTag AnimSetTag /*= FGameplayTag::EmptyTag*/, USkeletalMeshComponent* InMesh /*= nullptr*/) const
 {
-	if (const UChimeraAnimSet* AnimSet = GetAnimSetForMesh(InMesh == nullptr ? GetMesh() : InMesh))
+	if (const UChimeraAnimSet* AnimSet = GetAnimSetForMesh(AnimSetTag, InMesh == nullptr ? GetMesh() : InMesh))
 	{
 		if (const TObjectPtr<const UAnimMontage>* MontageEntry = AnimSet->Montages.Find(MontageTag))
 		{

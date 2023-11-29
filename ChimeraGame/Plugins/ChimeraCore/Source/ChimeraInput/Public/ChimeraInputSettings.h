@@ -19,7 +19,7 @@ class CHIMERAINPUT_API UChimeraInputSettings : public UDeveloperSettings
 public:
 
 	// agreene 2023/11/28 - #ToDo #Input Set this up to optionally be auto-populated through setting a parent tag
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ForceInlineRow))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, config, meta = (ForceInlineRow))
 	TMap<FGameplayTag, TSoftObjectPtr<const class UInputAction>> InputActionMapping;
 
 	//----- Utility Methods -----//

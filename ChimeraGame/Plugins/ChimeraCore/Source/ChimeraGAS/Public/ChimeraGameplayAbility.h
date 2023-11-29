@@ -2,6 +2,8 @@
 
 #include "Abilities/GameplayAbility.h"
 
+#include "ChimeraAbilitySystemComponent.h"
+
 #include "ChimeraGameplayAbility.generated.h"
 
 UENUM()
@@ -11,10 +13,8 @@ enum class EAbilityActivationPolicy : uint8
     OnGranted,
     /** Wait for an ability trigger to activate. */
     OnAbilityTrigger,
-    /** Activate when the input is pressed. */
-    OnInputPressed,
     /** Attempt to active each frame as long as the input is held. */
-    WhileInputHeld
+    OnInput
 };
 
 UCLASS()
@@ -60,10 +60,10 @@ protected:
 public:
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
-    EAbilityActivationPolicy ActivationPolicy{ EAbilityActivationPolicy::OnInputPressed };
+    EAbilityActivationPolicy ActivationPolicy{ EAbilityActivationPolicy::OnInput };
 
-    UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (Categories = "Input", EditConditionHides, EditCondition="ActivationPolicy==EAbilityActivationPolicy::OnInputPressed||ActivationPolicy==EAbilityActivationPolicy::WhileInputHeld"))
-    FGameplayTag InputTag;
+    UPROPERTY(EditDefaultsOnly)
+    FGASInputEvent ActivationEvent;
 
     //----- Instance Variables -----//
 protected:

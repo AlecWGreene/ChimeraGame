@@ -72,3 +72,6 @@ ChimeraGame/Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 ChimeraGame/DerivedDataCache/*
+
+# Misc
+enc_temp_folder/*
