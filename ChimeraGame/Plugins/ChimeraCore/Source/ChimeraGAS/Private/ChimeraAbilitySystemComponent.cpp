@@ -53,6 +53,8 @@ void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec
 				Ability->ActivationEvent.TriggerEvent,
 				this, &ThisClass::HandleInputEvent);
 
+			CachedInputComponent->BindActionValue(Ability->ActivationEvent.InputAction);
+
 			TSet<FGameplayAbilitySpecHandle>& NewAbilitySet = AbilityInputActivations.Add(Ability->ActivationEvent);
 			NewAbilitySet.Add(Spec.Handle);
 		}
