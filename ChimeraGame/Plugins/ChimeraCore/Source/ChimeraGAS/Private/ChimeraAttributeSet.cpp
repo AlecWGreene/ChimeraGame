@@ -42,7 +42,7 @@ void UChimeraAttributeSetInitializer::PostEditChangeProperty(FPropertyChangedEve
 
 bool UChimeraAttributeSetInitializer::InitializeAttributeSet(UAttributeSet* TargetSet) const
 {
-	if (IsValid(TargetSet) && TargetSet->StaticClass() == AttributeSetClass)
+	if (IsValid(TargetSet) && TargetSet->IsA(AttributeSetClass))
 	{
 		for (TPair<FString, float> InitialData : AttributeDefaults)
 		{
@@ -53,6 +53,7 @@ bool UChimeraAttributeSetInitializer::InitializeAttributeSet(UAttributeSet* Targ
 					*InitialData.Key, *GetNameSafe(TargetSet)))
 				{
 					AttributeData->SetBaseValue(InitialData.Value);
+					AttributeData->SetCurrentValue(InitialData.Value);
 				}
 			}
 			else

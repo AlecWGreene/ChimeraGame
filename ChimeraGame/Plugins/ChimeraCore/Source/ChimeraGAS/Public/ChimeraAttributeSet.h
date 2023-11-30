@@ -34,7 +34,6 @@ public:
 #endif
 
 public:
-
 	virtual bool InitializeAttributeSet(UAttributeSet* TargetSet) const;
 
 public:

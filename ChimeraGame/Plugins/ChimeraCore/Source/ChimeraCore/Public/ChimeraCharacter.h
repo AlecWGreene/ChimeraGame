@@ -20,6 +20,7 @@ public:
 	AChimeraCharacter();
 
 protected:
+	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//----- Components -----//
@@ -70,6 +71,6 @@ protected:
 protected:
 
 	// agreene 11/29/2023 - #ToDo #Loading leaving this as a direct reference until the AssetLoader work is done
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ExposeOnSpawn))
-	TObjectPtr<class UChimeraCharacterDefinition> CharacterDefinition;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<class UChimeraCharacterData> CharacterData;
 };

@@ -2,10 +2,9 @@
 
 #include "EnhancedInputComponent.h"
 
-#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
-#include "ChimeraGAS\Public\ChimeraGameplayAbility.h"
-#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
-#include "ChimeraGAS\Public\ChimeraGASLogCategories.h"
+#include "ChimeraAbilitySystemGlobals.h"
+#include "ChimeraAttributeSet.h"
+#include "ChimeraGameplayAbility.h"
 
 UChimeraAbilitySystemComponent::UChimeraAbilitySystemComponent()
 {
@@ -71,4 +70,20 @@ void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance
 			TryActivateAbility(AbilitySpecHandle);
 		}
 	}
+}
+
+const UAttributeSet* UChimeraAbilitySystemComponent::ApplyInitializer(const UChimeraAttributeSetInitializer* Initializer)
+{
+	if (IsValid(Initializer))
+	{
+		const UAttributeSet* Output = GetOrCreateAttributeSubobject(Initializer->AttributeSetClass);
+		if (IsValid(Output))
+		{
+			Initializer->InitializeAttributeSet(const_cast<UAttributeSet*>(Output));
+		}
+
+		return Output;
+	}
+
+	return nullptr;
 }

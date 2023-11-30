@@ -59,6 +59,11 @@ public:
     virtual void BindAbilityInput(const FGameplayAbilitySpec& Spec);
     virtual void HandleInputEvent(const FInputActionInstance& InputActionInstance);
 
+    //----- Attributes -----//
+public:
+
+    virtual const UAttributeSet* ApplyInitializer(const class UChimeraAttributeSetInitializer* Initializer);
+
     //----- Getters -----//
 public:
 

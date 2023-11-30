@@ -8,6 +8,7 @@
 
 #include "ChimeraCharacterData.generated.h"
 
+// agreene 2023/11/29 - #ToDo #Character Create spawning methods which take this class and a blueprint class
 UCLASS(BlueprintType)
 class CHIMERACORE_API UChimeraCharacterData : public UPrimaryDataAsset
 {
@@ -17,4 +18,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced)
 	TArray<TObjectPtr<const UChimeraAttributeSetInitializer>> Attributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FGameplayAbilitySpecDef> Abilities;
 };
