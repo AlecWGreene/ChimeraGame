@@ -80,6 +80,6 @@ public:
     TMap<FGASInputEvent, TSet<FGameplayAbilitySpecHandle>> AbilityInputActivations;
     TSet<FGASInputEvent> TriggeredInputEvents;
 
-    TWeakObjectPtr<UEnhancedInputComponent> CachedInputComponent;
+    TWeakObjectPtr<class UEnhancedInputComponent> CachedInputComponent;
 };
 

@@ -65,4 +65,11 @@ protected:
 		UPARAM(meta = (Categories = "Anim.Montage")) FGameplayTag MontageTag, 
 		UPARAM(meta = (Categories = "Anim.Set")) FGameplayTag AnimSetTag = FGameplayTag(), 
 		USkeletalMeshComponent* InMesh = nullptr) const;
+
+	//----- Instance Variables -----//
+protected:
+
+	// agreene 11/29/2023 - #ToDo #Loading leaving this as a direct reference until the AssetLoader work is done
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ExposeOnSpawn))
+	TObjectPtr<class UChimeraCharacterDefinition> CharacterDefinition;
 };

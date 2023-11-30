@@ -1,8 +1,7 @@
+// Copyright Alec Greene. All Rights Reserved.
 #include "GameplayEffects/ChimeraEffectTypes.h"
 
 #include "AbilitySystemComponent.h"
-
-// Copyright Alec Greene. All Rights Reserved.
 
 FGameplayEffectSpecHandle FGameplayEffectSpecDef::CreateSpec(const UAbilitySystemComponent* ASC, FGameplayEffectContextHandle Context) const
 {

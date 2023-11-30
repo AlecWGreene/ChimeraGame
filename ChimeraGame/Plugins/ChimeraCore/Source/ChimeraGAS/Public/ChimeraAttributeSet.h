@@ -21,20 +21,26 @@ class CHIMERAGAS_API UChimeraAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 };
 
-UCLASS(BlueprintType, DefaultToInstanced)
+UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
 class CHIMERAGAS_API UChimeraAttributeSetInitializer : public UObject
 {
 	GENERATED_BODY()
 
 public:
+	UChimeraAttributeSetInitializer();
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
 public:
+
+	virtual bool InitializeAttributeSet(UAttributeSet* TargetSet) const;
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UChimeraAttributeSet> AttributeSetClass;
+	TSubclassOf<UAttributeSet> AttributeSetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ReadOnlyKeys, ForceInlineRow))
-	TMap<FGameplayAttribute, float> AttributeDefaults;
+	TMap<FString, float> AttributeDefaults;
 };

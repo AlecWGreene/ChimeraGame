@@ -1,6 +1,13 @@
 // Copyright Alec Greene. All Rights Reserved.
 #include "ChimeraAttributeSet.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogChimeraAttributeSet, Log, All);
+
+UChimeraAttributeSetInitializer::UChimeraAttributeSetInitializer()
+{
+	
+}
+
 #if WITH_EDITOR
 void UChimeraAttributeSetInitializer::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -24,10 +31,39 @@ void UChimeraAttributeSetInitializer::PostEditChangeProperty(FPropertyChangedEve
 					}
 
 					FGameplayAttribute Attribute = FGameplayAttribute(StructProperty);
-					AttributeDefaults.Add(Attribute, 0.f);
+					AttributeDefaults.Add(Attribute.AttributeName, 0.f);
 				}
 			}
 		}
 	}
 }
 #endif
+
+
+bool UChimeraAttributeSetInitializer::InitializeAttributeSet(UAttributeSet* TargetSet) const
+{
+	if (IsValid(TargetSet) && TargetSet->StaticClass() == AttributeSetClass)
+	{
+		for (TPair<FString, float> InitialData : AttributeDefaults)
+		{
+			if (FProperty* Attribute = AttributeSetClass->FindPropertyByName(FName(InitialData.Key)))
+			{
+				FGameplayAttributeData* AttributeData = Attribute->ContainerPtrToValuePtr<FGameplayAttributeData>(TargetSet);
+				if (ensureAlwaysMsgf(AttributeData, TEXT("Failed to read attribute data for %s in %s"), 
+					*InitialData.Key, *GetNameSafe(TargetSet)))
+				{
+					AttributeData->SetBaseValue(InitialData.Value);
+				}
+			}
+			else
+			{
+				UE_LOG(LogChimeraAttributeSet, Warning, TEXT("Failed to find attribute %s in set %s"), 
+					*InitialData.Key, *GetNameSafe(AttributeSetClass));
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+}
