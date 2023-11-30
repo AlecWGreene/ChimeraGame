@@ -5,6 +5,8 @@
 
 #include "ChimeraAbilitySystemComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGASInputEventDelegate, const FInputActionInstance&, InputActionInstance);
+
 USTRUCT(BlueprintType)
 struct CHIMERAGAS_API FGASInputEvent
 {
@@ -57,6 +59,9 @@ public:
     //----- Input -----//
 public:
     virtual void BindAbilityInput(const FGameplayAbilitySpec& Spec);
+    virtual FGASInputEventDelegate& FindOrAddGASInputEventDelegate(const FGASInputEvent& InputEvent);
+
+protected:
     virtual void HandleInputEvent(const FInputActionInstance& InputActionInstance);
 
     //----- Attributes -----//
@@ -83,7 +88,7 @@ public:
     TArray<FGameplayAbilitySpecHandle> InputReleasedHandles;
 
     TMap<FGASInputEvent, TSet<FGameplayAbilitySpecHandle>> AbilityInputActivations;
-    TSet<FGASInputEvent> TriggeredInputEvents;
+    TMap<FGASInputEvent, FGASInputEventDelegate> GASInputEventDelegates;
 
     TWeakObjectPtr<class UEnhancedInputComponent> CachedInputComponent;
 };

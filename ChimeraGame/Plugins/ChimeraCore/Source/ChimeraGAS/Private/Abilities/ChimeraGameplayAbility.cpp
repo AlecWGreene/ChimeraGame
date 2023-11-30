@@ -1,9 +1,8 @@
-#include "ChimeraGameplayAbility.h"
+#include "Abilities/ChimeraGameplayAbility.h"
 
 #include "AbilitySystemComponent.h"
-#include "ChimeraGAS/Public/ChimeraGameplayAbility.h"
-#include "ChimeraGAS/Public/ChimeraAbilitySystemGlobals.h"
-#include "ChimeraGAS/Public/ChimeraGASLogCategories.h"
+#include "ChimeraAbilitySystemGlobals.h"
+#include "ChimeraGASLogCategories.h"
 
 UChimeraGameplayAbility::UChimeraGameplayAbility()
 {

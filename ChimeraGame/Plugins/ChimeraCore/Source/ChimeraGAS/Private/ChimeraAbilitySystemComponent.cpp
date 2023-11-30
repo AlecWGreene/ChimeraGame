@@ -2,9 +2,9 @@
 
 #include "EnhancedInputComponent.h"
 
+#include "Abilities/ChimeraGameplayAbility.h"
 #include "ChimeraAbilitySystemGlobals.h"
 #include "ChimeraAttributeSet.h"
-#include "ChimeraGameplayAbility.h"
 
 UChimeraAbilitySystemComponent::UChimeraAbilitySystemComponent()
 {
@@ -60,6 +60,11 @@ void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec
 	}
 }
 
+FGASInputEventDelegate& UChimeraAbilitySystemComponent::FindOrAddGASInputEventDelegate(const FGASInputEvent& InputEvent)
+{
+	return GASInputEventDelegates.FindOrAdd(InputEvent);
+}
+
 void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance& InputActionInstance)
 {
 	FGASInputEvent InputEvent(InputActionInstance.GetSourceAction(), InputActionInstance.GetTriggerEvent());
@@ -69,6 +74,17 @@ void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance
 		{
 			TryActivateAbility(AbilitySpecHandle);
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No abilities found for %s : %s"), 
+			*GetNameSafe(InputActionInstance.GetSourceAction()),
+			*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
+	}
+
+	if (const FGASInputEventDelegate* InputEventDelegate = GASInputEventDelegates.Find(InputEvent))
+	{
+		InputEventDelegate->Broadcast(InputActionInstance);
 	}
 }
 
