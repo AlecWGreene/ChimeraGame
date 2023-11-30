@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Abilities/GameplayAbility.h"
+#include "GameplayEffects/ChimeraEffectTypes.h"
 
 #include "ChimeraAbilitySystemComponent.h"
 
@@ -46,6 +47,12 @@ protected:
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
     void PostEndAbility(const FGameplayAbilitySpecHandle& Handle, const FGameplayAbilityActorInfo& ActorInfo, const FGameplayAbilityActivationInfo& ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled);
     virtual void PostEndAbility_Implementation(const FGameplayAbilitySpecHandle& Handle, const FGameplayAbilityActorInfo& ActorInfo, const FGameplayAbilityActivationInfo& ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) {}
+
+    //----- Gameplay Effects -----//
+protected:
+
+    UFUNCTION(BlueprintCallable)
+    virtual FGameplayEffectSpecHandle MakeOutgoingSpecFromDef(const FGameplayEffectSpecDef& SpecDef) const;
 
     //----- Utility -----//
 protected:

@@ -67,3 +67,15 @@ void UChimeraGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 	PostEndAbility(Handle, AbilityActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
+
+FGameplayEffectSpecHandle UChimeraGameplayAbility::MakeOutgoingSpecFromDef(const FGameplayEffectSpecDef& SpecDef) const
+{
+	FGameplayEffectSpecHandle Output;
+	if (CurrentActorInfo && CurrentActorInfo->AbilitySystemComponent.IsValid())
+	{
+		Output = MakeOutgoingGameplayEffectSpec(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SpecDef.EffectClass, SpecDef.Level);
+		SpecDef.ModifySpec(Output);
+	}
+
+	return Output;
+}
