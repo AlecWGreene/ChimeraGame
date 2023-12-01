@@ -1,3 +1,4 @@
+// Copyright Alec Greene. All Rights Reserved.
 #include "ChimeraAbilitySystemComponent.h"
 
 #include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
