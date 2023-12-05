@@ -23,7 +23,8 @@ public class ChimeraGame : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"Vitality"
+			"Vitality",
+			"Weapons"
 		});
 	}
 }

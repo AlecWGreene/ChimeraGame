@@ -34,6 +34,16 @@ void UChimeraAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& Ability
 	}
 }
 
+void UChimeraAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Handle.IsValid())
+	{
+		UnbindAbilityInput(AbilitySpec);
+	}
+
+	Super::OnRemoveAbility(AbilitySpec);
+}
+
 void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec& Spec)
 {
 	const UChimeraGameplayAbility* Ability = Cast<UChimeraGameplayAbility>(Spec.Ability);
@@ -61,6 +71,25 @@ void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec
 	}
 }
 
+void UChimeraAbilitySystemComponent::UnbindAbilityInput(const FGameplayAbilitySpec& Spec)
+{
+	const UChimeraGameplayAbility* Ability = Cast<UChimeraGameplayAbility>(Spec.Ability);
+	if (Ability
+		&& Ability->ActivationPolicy == EAbilityActivationPolicy::OnInput
+		&& Ability->ActivationEvent.IsValid())
+	{
+		if (TSet<FGameplayAbilitySpecHandle>* AbilitySet = AbilityInputActivations.Find(Ability->ActivationEvent))
+		{
+			AbilitySet->Remove(Spec.Handle);
+
+			if (AbilitySet->IsEmpty())
+			{
+				AbilityInputActivations.Remove(Ability->ActivationEvent);
+			}
+		}
+	}
+}
+
 FGASInputEventDelegate& UChimeraAbilitySystemComponent::FindOrAddGASInputEventDelegate(const FGASInputEvent& InputEvent)
 {
 	return GASInputEventDelegates.FindOrAdd(InputEvent);
@@ -68,6 +97,10 @@ FGASInputEventDelegate& UChimeraAbilitySystemComponent::FindOrAddGASInputEventDe
 
 void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance& InputActionInstance)
 {
+	UE_LOG(LogTemp, Verbose, TEXT("Input Event %s - %s"),
+		*GetNameSafe(InputActionInstance.GetSourceAction()),
+		*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
+
 	FGASInputEvent InputEvent(InputActionInstance.GetSourceAction(), InputActionInstance.GetTriggerEvent());
 	if (TSet<FGameplayAbilitySpecHandle>* AbilitySet = AbilityInputActivations.Find(InputEvent))
 	{

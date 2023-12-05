@@ -55,10 +55,12 @@ public:
 
     virtual void BindToInputComponent(UInputComponent* InputComponent) override;
     virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
+    virtual void OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
     //----- Input -----//
 public:
     virtual void BindAbilityInput(const FGameplayAbilitySpec& Spec);
+    virtual void UnbindAbilityInput(const FGameplayAbilitySpec& Spec);
     virtual FGASInputEventDelegate& FindOrAddGASInputEventDelegate(const FGASInputEvent& InputEvent);
 
 protected:

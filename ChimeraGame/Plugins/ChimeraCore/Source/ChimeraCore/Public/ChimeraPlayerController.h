@@ -15,6 +15,8 @@ class CHIMERACORE_API AChimeraPlayerController :
     //----- APlayerController Overrides -----//
 public:
 
+    virtual void EndPlay(EEndPlayReason::Type Reason) override;
+
     //----- Class Settings -----//
 public:
 
