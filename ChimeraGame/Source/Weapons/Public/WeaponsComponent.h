@@ -28,9 +28,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<class UStaticMeshComponent*> GetWeaponMeshes(FGameplayTagContainer WeaponSlots) const;
 
+	UFUNCTION(BlueprintCallable, meta = (Categories = "Weapons.Slot"))
+	void ActivateWeapon(FGameplayTagContainer WeaponSlots);
+
+	UFUNCTION(BlueprintCallable, meta = (Categories = "Weapons.Slot"))
+	void DeactivateWeapon(FGameplayTagContainer WeaponSlots);
+
 protected:
 
 	void CollectWeaponMeshes();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void HandleWeaponOverlap(
+		UPrimitiveComponent* OverlappedComp, 
+		AActor* Other, 
+		UPrimitiveComponent* OtherComp, 
+		int32 OtherBodyIndex, 
+		bool bFromSweep, 
+		const FHitResult& SweepResult);
 
 public:
 
@@ -40,6 +55,11 @@ public:
 	//----- Instance Variables -----//
 protected:
 
-	UPROPERTY(VisibleAnywhere, meta = (ForceInlineRow))
+	UPROPERTY(VisibleAnywhere)
+	FGameplayTagContainer ActiveWeaponMeshes;
+
+	UPROPERTY(VisibleAnywhere, meta = (ForceInlineRow, Categories = "Weapons.Slot"))
 	TMap<FGameplayTag, TWeakObjectPtr<class UStaticMeshComponent>> WeaponMeshesBySlot;
+
+	TWeakObjectPtr<class UChimeraAbilitySystemComponent> AbilitySystemComponent;
 };

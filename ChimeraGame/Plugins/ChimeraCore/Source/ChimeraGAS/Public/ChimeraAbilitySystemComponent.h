@@ -37,6 +37,7 @@ struct CHIMERAGAS_API FGASInputEvent
     }
 };
 
+// agreene 2023/12/5 - #ToDo #Input I suspect this is not generating the unique results for the hash that we want.
 FORCEINLINE uint32 GetTypeHash(const FGASInputEvent& Event)
 {
     uint32 Hash = FCrc::MemCrc32(&Event, sizeof(FGASInputEvent));
@@ -56,6 +57,7 @@ public:
     virtual void BindToInputComponent(UInputComponent* InputComponent) override;
     virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
     virtual void OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec) override;
+    virtual int32 HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload) override;
 
     //----- Input -----//
 public:

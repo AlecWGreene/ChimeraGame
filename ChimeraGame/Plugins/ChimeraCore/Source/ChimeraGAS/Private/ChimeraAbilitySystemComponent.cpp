@@ -44,6 +44,13 @@ void UChimeraAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& Abili
 	Super::OnRemoveAbility(AbilitySpec);
 }
 
+int32 UChimeraAbilitySystemComponent::HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload)
+{
+	UE_LOG(LogTemp, Verbose, TEXT("GameplayEvent %s"), *EventTag.ToString());
+
+	return Super::HandleGameplayEvent(EventTag, Payload);
+}
+
 void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec& Spec)
 {
 	const UChimeraGameplayAbility* Ability = Cast<UChimeraGameplayAbility>(Spec.Ability);
