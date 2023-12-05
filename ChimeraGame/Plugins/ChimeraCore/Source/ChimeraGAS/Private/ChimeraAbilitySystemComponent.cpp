@@ -27,6 +27,7 @@ void UChimeraAbilitySystemComponent::BindToInputComponent(UInputComponent* Input
 void UChimeraAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
 {
 	Super::OnGiveAbility(AbilitySpec);
+
 	if (AbilitySpec.Handle.IsValid())
 	{
 		BindAbilityInput(AbilitySpec);
