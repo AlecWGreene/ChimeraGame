@@ -26,6 +26,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "ChimeraGAS_BlueprintNodes",
+			"Type": "UncookedOnly",
+			"LoadingPhase":  "Default"
+		},
+		{
 			"Name": "ChimeraInput",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

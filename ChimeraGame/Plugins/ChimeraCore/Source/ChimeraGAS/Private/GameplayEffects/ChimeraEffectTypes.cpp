@@ -20,10 +20,6 @@ FGameplayEffectSpecHandle FGameplayEffectSpecDef::CreateSpec(const UAbilitySyste
 			Output.Data->AppendDynamicAssetTags(DynamicAssetTags);
 			Output.Data->DynamicGrantedTags.AppendTags(DynamicGrantedTags);
 			Output.Data->SetByCallerTagMagnitudes.Append(SetByCallers);
-			Output.Data->GrantedAbilitySpecs.Append(GrantedAbilities);
-
-			TArray<FGameplayEffectSpecHandle> LinkedEffects = CreateLinkedEffectsList(ContextToUse, Output.Data->CapturedSourceTags.GetActorTags());
-			Output.Data->TargetEffectSpecs.Append(LinkedEffects);
 		}
 
 		return Output;
@@ -40,35 +36,29 @@ bool FGameplayEffectSpecDef::ModifySpec(FGameplayEffectSpecHandle& InOutSpec) co
 		InOutSpec.Data->AppendDynamicAssetTags(DynamicAssetTags);
 		InOutSpec.Data->DynamicGrantedTags.AppendTags(DynamicGrantedTags);
 		InOutSpec.Data->SetByCallerTagMagnitudes.Append(SetByCallers);
-		InOutSpec.Data->GrantedAbilitySpecs.Append(GrantedAbilities);
-
-		TArray<FGameplayEffectSpecHandle> LinkedEffects = CreateLinkedEffectsList(
-			InOutSpec.Data->GetEffectContext(), InOutSpec.Data->CapturedSourceTags.GetActorTags());
-		InOutSpec.Data->TargetEffectSpecs.Append(LinkedEffects);
 	}
 
 	return false;
 }
 
-TArray<FGameplayEffectSpecHandle> FGameplayEffectSpecDef::CreateLinkedEffectsList(FGameplayEffectContextHandle Context, FGameplayTagContainer CapturedSourceTags) const
+bool FChimeraTargetDataFilter::FilterPassesForActor(const AActor* Actor) const
 {
-	if (Context.IsValid())
+	if (const IGameplayTagAssetInterface* GameplayTagInterface = Cast<IGameplayTagAssetInterface>(Actor))
 	{
-		TArray<FGameplayEffectSpecHandle> Output;
-		for (const FConditionalGameplayEffect& Effect : ConditionalEffects)
-		{
-			if (Effect.CanApply(CapturedSourceTags, Level))
-			{
-				FGameplayEffectSpecHandle SpecHandle = Effect.CreateSpec(Context, Level);
-				if (SpecHandle.IsValid())
-				{
-					Output.Add(SpecHandle);
-				}
-			}
-		}
+		FGameplayTagContainer OwnedTags;
+		GameplayTagInterface->GetOwnedGameplayTags(OwnedTags);
 
-		return Output;
+		if (!TargetTagConditions.Matches(OwnedTags))
+		{
+			return false;
+		}
 	}
 
-	return TArray<FGameplayEffectSpecHandle>();
+	if ((FGenericTeamId::GetAttitude(SelfActor, Actor) & TargetAttitudes) == 0
+		&& !(bOverrideTeamAttitudeForSelf && SelfActor == Actor))
+	{
+		return false;
+	}
+
+	return Super::FilterPassesForActor(Actor);
 }
