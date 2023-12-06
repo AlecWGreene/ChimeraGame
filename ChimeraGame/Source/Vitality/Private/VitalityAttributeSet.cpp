@@ -3,6 +3,8 @@
 
 #include "GameplayEffectExtension.h"
 
+#include "VitalityTags.h"
+
 UVitalityAttributeSet::UVitalityAttributeSet()
 {
 }
@@ -14,7 +16,19 @@ void UVitalityAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 
 void UVitalityAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
+	if (Attribute == GetHealthAttribute())
+	{
+		if (NewValue <= 0.f)
+		{
+			if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
+			{
+				// agreene 2023/12/5 - #ToDo #Vitality Populate death data
+				FGameplayEventData DeathEventData;
 
+				ASC->HandleGameplayEvent(VitalityTags::Event_Death_Start, &DeathEventData);
+			}
+		}
+	}
 }
 
 void UVitalityAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

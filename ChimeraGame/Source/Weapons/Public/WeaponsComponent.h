@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateWeapons(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTagContainer WeaponSlots);
 
+	UFUNCTION(BlueprintCallable)
+	const class UWeaponData* GetWeaponData(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTag WeaponSlot) const;
+
 	//----- Utility Methods -----//
 protected:
 
@@ -66,6 +69,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	FGameplayTagContainer ActiveWeaponMeshes;
 
+	/** Weapon data in each slot representing the gamelpay properties of the weapon. */
+	UPROPERTY(VisibleAnywhere, meta = (ForceInlineRow, Categories = "Weapons.Slot"))
+	TMap<FGameplayTag, TObjectPtr<const class UWeaponData>> WeaponsBySlot;
+
+	/** References to weapon meshes on the owning actor, used to visualize weapons. */
 	UPROPERTY(VisibleAnywhere, meta = (ForceInlineRow, Categories = "Weapons.Slot"))
 	TMap<FGameplayTag, TWeakObjectPtr<class UStaticMeshComponent>> WeaponMeshesBySlot;
 

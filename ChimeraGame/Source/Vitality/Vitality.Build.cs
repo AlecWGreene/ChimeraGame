@@ -26,6 +26,7 @@ public class Vitality : ModuleRules
 			new string[]
 			{
 				"Core",
+				"ChimeraCore",
 				"ChimeraGAS",
 				"GameplayAbilities",
 				"GameplayTags",

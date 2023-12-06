@@ -53,7 +53,7 @@ protected:
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 
 	//----- Animation -----//
-protected:
+public:
 
 	UFUNCTION(BlueprintPure)
 	virtual const class UChimeraAnimSet* GetAnimSetForMesh( 

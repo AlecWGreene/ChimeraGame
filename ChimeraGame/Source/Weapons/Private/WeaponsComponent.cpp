@@ -6,6 +6,7 @@
 
 #include "ChimeraAbilitySystemComponent.h"
 #include "ChimeraGASFunctionLibrary.h"
+#include "WeaponData.h"
 #include "WeaponsTags.h"
 
 UWeaponsComponent::UWeaponsComponent()
@@ -90,6 +91,12 @@ void UWeaponsComponent::DeactivateWeapons(FGameplayTagContainer WeaponSlots)
 			}
 		}
 	}
+}
+
+const UWeaponData* UWeaponsComponent::GetWeaponData(FGameplayTag WeaponSlot) const
+{
+	const TObjectPtr<const UWeaponData>* DataPtr = WeaponsBySlot.Find(WeaponSlot);
+	return DataPtr ? DataPtr->Get() : nullptr;
 }
 
 void UWeaponsComponent::CollectWeaponMeshes()
