@@ -5,6 +5,7 @@
 #include "Engine/StreamableManager.h"
 
 #include "ChimeraCharacter.h"
+#include "ChimeraCharacterData.h"
 
 #include "ChimeraGameCharacter.generated.h"
 
@@ -25,6 +26,9 @@ public:
 	// agreene 2023/11/27 - #ToDo Move this to async loading
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Anim.Set", ForceInlineRow))
 	TMap<FGameplayTag, TSoftObjectPtr<const class UChimeraAnimSet>> AnimSets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Categories = "Weapons.Slot", ForceInlineRow))
+	TMap<FGameplayTag, TObjectPtr<class UWeaponData>> DefaultWeapons;
 
 	//----- Loading -----//
 public:

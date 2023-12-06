@@ -5,6 +5,7 @@
 #include "Engine/AssetManager.h"
 
 #include "ChimeraAnimSet.h"
+#include "WeaponsComponent.h"
 
 AChimeraGameCharacter::AChimeraGameCharacter()
 {
@@ -16,6 +17,15 @@ void AChimeraGameCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	RequestLoadAnims();
+
+	// agreene 2023/12/6 - #ToDo #Weapons maybe its time to add the component to the c++ class?
+	if (UWeaponsComponent* WeaponsComponent = FindComponentByClass<UWeaponsComponent>())
+	{
+		for (TPair<FGameplayTag, TObjectPtr<const UWeaponData>> SlotData : DefaultWeapons)
+		{
+			WeaponsComponent->GiveWeapon(SlotData.Key, SlotData.Value);
+		}
+	}
 }
 
 const UChimeraAnimSet* AChimeraGameCharacter::GetAnimSetForMesh(FGameplayTag AnimSetTag, const USkeletalMeshComponent* InMesh) const

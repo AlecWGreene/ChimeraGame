@@ -69,7 +69,7 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     EAbilityActivationPolicy ActivationPolicy{ EAbilityActivationPolicy::OnInput };
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FGASInputEvent ActivationEvent;
 
     //----- Instance Variables -----//

@@ -42,6 +42,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	const class UWeaponData* GetWeaponData(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTag WeaponSlot) const;
 
+	UFUNCTION(BlueprintCallable)
+	void GiveWeapon(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTag WeaponSlot, const class UWeaponData* WeaponData);
+
+	UFUNCTION(BlueprintCallable)
+	bool EquipWeapon(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTag WeaponSlot, const class UWeaponData* WeaponData);
+
 	//----- Utility Methods -----//
 protected:
 
