@@ -33,6 +33,12 @@ public:
         const UAbilitySystemComponent* ASC, 
         FGameplayEffectContextHandle Context, 
         const FGameplayEffectSpecDef& SpecDef);
+
+    //----- Target Data -----//
+public:
+
+    UFUNCTION(BlueprintCallable)
+    static bool TargetDataFilterPassesForActor(const AActor* Actor, const FChimeraTargetDataFilter& Filter);
 };
 
 template<class T>

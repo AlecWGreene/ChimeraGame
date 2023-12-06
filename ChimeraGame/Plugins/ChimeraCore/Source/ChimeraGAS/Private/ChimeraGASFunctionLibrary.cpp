@@ -11,3 +11,8 @@ FGameplayEffectSpecHandle UChimeraGASFunctionLibrary::MakeSpecFromDef(const UAbi
 {
 	return SpecDef.CreateSpec(ASC, Context);
 }
+
+bool UChimeraGASFunctionLibrary::TargetDataFilterPassesForActor(const AActor* Actor, const FChimeraTargetDataFilter& Filter)
+{
+	return Filter.FilterPassesForActor(Actor);
+}
