@@ -13,6 +13,8 @@
 #include "InputMappingContext.h"
 
 #include "ChimeraAnimSet.h"
+#include "ChimeraAttributeSet.h"
+#include "ChimeraCharacterData.h"
 #include "ChimeraCoreTags.h"
 #include "ChimeraGASFunctionLibrary.h"
 #include "ChimeraInputComponent.h"
@@ -62,6 +64,26 @@ AChimeraCharacter::AChimeraCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void AChimeraCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Apply character data
+	if (IsValid(CharacterData) && AbilitySystemComponent)
+	{
+		for (const UChimeraAttributeSetInitializer* Initializer : CharacterData->Attributes)
+		{
+			AbilitySystemComponent->ApplyInitializer(Initializer);
+		}
+
+		for (const FGameplayAbilitySpecDef& AbilitySpecDef : CharacterData->Abilities)
+		{
+			FGameplayAbilitySpec NewAbilitySpec = FGameplayAbilitySpec(AbilitySpecDef.Ability);
+			AbilitySystemComponent->GiveAbility(NewAbilitySpec);
+		}
+	}
 }
 
 void AChimeraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

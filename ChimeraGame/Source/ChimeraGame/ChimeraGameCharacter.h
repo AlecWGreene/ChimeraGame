@@ -23,7 +23,7 @@ public:
 public:
 
 	// agreene 2023/11/27 - #ToDo Move this to async loading
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Anim.Set"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Anim.Set", ForceInlineRow))
 	TMap<FGameplayTag, TSoftObjectPtr<const class UChimeraAnimSet>> AnimSets;
 
 	//----- Loading -----//

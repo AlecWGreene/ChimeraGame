@@ -2,10 +2,11 @@
 
 #include "EnhancedInputComponent.h"
 
-#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
-#include "ChimeraGAS\Public\ChimeraGameplayAbility.h"
-#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
-#include "ChimeraGAS\Public\ChimeraGASLogCategories.h"
+#include "Abilities/ChimeraGameplayAbility.h"
+#include "ChimeraAbilitySystemGlobals.h"
+#include "ChimeraAttributeSet.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogChimeraASC, Log, All);
 
 UChimeraAbilitySystemComponent::UChimeraAbilitySystemComponent()
 {
@@ -28,10 +29,28 @@ void UChimeraAbilitySystemComponent::BindToInputComponent(UInputComponent* Input
 void UChimeraAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
 {
 	Super::OnGiveAbility(AbilitySpec);
+
 	if (AbilitySpec.Handle.IsValid())
 	{
 		BindAbilityInput(AbilitySpec);
 	}
+}
+
+void UChimeraAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Handle.IsValid())
+	{
+		UnbindAbilityInput(AbilitySpec);
+	}
+
+	Super::OnRemoveAbility(AbilitySpec);
+}
+
+int32 UChimeraAbilitySystemComponent::HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload)
+{
+	UE_LOG(LogChimeraASC, Verbose, TEXT("GameplayEvent %s"), *EventTag.ToString());
+
+	return Super::HandleGameplayEvent(EventTag, Payload);
 }
 
 void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec& Spec)
@@ -48,7 +67,7 @@ void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec
 		else if (CachedInputComponent.IsValid())
 		{
 			// agreene 2023/11/28 - #ToDo #Input I may want to look at unbinding from these events, but it shouldn't matter for now.
-			CachedInputComponent->BindAction(
+			FEnhancedInputActionEventBinding& Binding = CachedInputComponent->BindAction(
 				Ability->ActivationEvent.InputAction,
 				Ability->ActivationEvent.TriggerEvent,
 				this, &ThisClass::HandleInputEvent);
@@ -61,8 +80,36 @@ void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec
 	}
 }
 
+void UChimeraAbilitySystemComponent::UnbindAbilityInput(const FGameplayAbilitySpec& Spec)
+{
+	const UChimeraGameplayAbility* Ability = Cast<UChimeraGameplayAbility>(Spec.Ability);
+	if (Ability
+		&& Ability->ActivationPolicy == EAbilityActivationPolicy::OnInput
+		&& Ability->ActivationEvent.IsValid())
+	{
+		if (TSet<FGameplayAbilitySpecHandle>* AbilitySet = AbilityInputActivations.Find(Ability->ActivationEvent))
+		{
+			AbilitySet->Remove(Spec.Handle);
+
+			if (AbilitySet->IsEmpty())
+			{
+				AbilityInputActivations.Remove(Ability->ActivationEvent);
+			}
+		}
+	}
+}
+
+FGASInputEventDelegate& UChimeraAbilitySystemComponent::FindOrAddGASInputEventDelegate(const FGASInputEvent& InputEvent)
+{
+	return GASInputEventDelegates.FindOrAdd(InputEvent);
+}
+
 void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance& InputActionInstance)
 {
+	UE_LOG(LogChimeraASC, Verbose, TEXT("Input Event %s - %s"),
+		*GetNameSafe(InputActionInstance.GetSourceAction()),
+		*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
+
 	FGASInputEvent InputEvent(InputActionInstance.GetSourceAction(), InputActionInstance.GetTriggerEvent());
 	if (TSet<FGameplayAbilitySpecHandle>* AbilitySet = AbilityInputActivations.Find(InputEvent))
 	{
@@ -71,4 +118,31 @@ void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance
 			TryActivateAbility(AbilitySpecHandle);
 		}
 	}
+	else
+	{
+		UE_LOG(LogChimeraASC, Warning, TEXT("No abilities found for %s : %s"),
+			*GetNameSafe(InputActionInstance.GetSourceAction()),
+			*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
+	}
+
+	if (const FGASInputEventDelegate* InputEventDelegate = GASInputEventDelegates.Find(InputEvent))
+	{
+		InputEventDelegate->Broadcast(InputActionInstance);
+	}
+}
+
+const UAttributeSet* UChimeraAbilitySystemComponent::ApplyInitializer(const UChimeraAttributeSetInitializer* Initializer)
+{
+	if (IsValid(Initializer))
+	{
+		const UAttributeSet* Output = GetOrCreateAttributeSubobject(Initializer->AttributeSetClass);
+		if (IsValid(Output))
+		{
+			Initializer->InitializeAttributeSet(const_cast<UAttributeSet*>(Output));
+		}
+
+		return Output;
+	}
+
+	return nullptr;
 }

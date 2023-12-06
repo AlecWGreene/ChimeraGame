@@ -5,6 +5,8 @@
 
 #include "ChimeraAbilitySystemComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGASInputEventDelegate, const FInputActionInstance&, InputActionInstance);
+
 USTRUCT(BlueprintType)
 struct CHIMERAGAS_API FGASInputEvent
 {
@@ -37,7 +39,7 @@ struct CHIMERAGAS_API FGASInputEvent
 
 FORCEINLINE uint32 GetTypeHash(const FGASInputEvent& Event)
 {
-    uint32 Hash = FCrc::MemCrc32(&Event, sizeof(FGASInputEvent));
+    const uint32 Hash = HashCombine(GetTypeHash(Event.InputAction), GetTypeHash(Event.TriggerEvent));
     return Hash;
 }
 
@@ -53,11 +55,22 @@ public:
 
     virtual void BindToInputComponent(UInputComponent* InputComponent) override;
     virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
+    virtual void OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec) override;
+    virtual int32 HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload) override;
 
     //----- Input -----//
 public:
     virtual void BindAbilityInput(const FGameplayAbilitySpec& Spec);
+    virtual void UnbindAbilityInput(const FGameplayAbilitySpec& Spec);
+    virtual FGASInputEventDelegate& FindOrAddGASInputEventDelegate(const FGASInputEvent& InputEvent);
+
+protected:
     virtual void HandleInputEvent(const FInputActionInstance& InputActionInstance);
+
+    //----- Attributes -----//
+public:
+
+    virtual const UAttributeSet* ApplyInitializer(const class UChimeraAttributeSetInitializer* Initializer);
 
     //----- Getters -----//
 public:
@@ -78,8 +91,8 @@ public:
     TArray<FGameplayAbilitySpecHandle> InputReleasedHandles;
 
     TMap<FGASInputEvent, TSet<FGameplayAbilitySpecHandle>> AbilityInputActivations;
-    TSet<FGASInputEvent> TriggeredInputEvents;
+    TMap<FGASInputEvent, FGASInputEventDelegate> GASInputEventDelegates;
 
-    TWeakObjectPtr<UEnhancedInputComponent> CachedInputComponent;
+    TWeakObjectPtr<class UEnhancedInputComponent> CachedInputComponent;
 };
 
