@@ -35,6 +35,11 @@ void UWeaponsComponent::EndPlay(EEndPlayReason::Type Reason)
 	Super::EndPlay(Reason);
 }
 
+UWeaponsComponent* UWeaponsComponent::GetWeaponsComponent(AActor* Actor)
+{
+	return Actor ? Actor->FindComponentByClass<UWeaponsComponent>() : nullptr;
+}
+
 TArray<UStaticMeshComponent*> UWeaponsComponent::GetWeaponMeshes(FGameplayTagContainer WeaponSlots) const
 {
 	TArray<UStaticMeshComponent*> Output;
@@ -51,7 +56,7 @@ TArray<UStaticMeshComponent*> UWeaponsComponent::GetWeaponMeshes(FGameplayTagCon
 	return Output;
 }
 
-void UWeaponsComponent::ActivateWeapon(FGameplayTagContainer WeaponSlots)
+void UWeaponsComponent::ActivateWeapons(FGameplayTagContainer WeaponSlots)
 {
 	for (FGameplayTag SlotTag : WeaponSlots)
 	{
@@ -69,7 +74,7 @@ void UWeaponsComponent::ActivateWeapon(FGameplayTagContainer WeaponSlots)
 	}
 }
 
-void UWeaponsComponent::DeactivateWeapon(FGameplayTagContainer WeaponSlots)
+void UWeaponsComponent::DeactivateWeapons(FGameplayTagContainer WeaponSlots)
 {
 	for (FGameplayTag SlotTag : WeaponSlots)
 	{

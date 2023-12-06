@@ -6,6 +6,8 @@
 #include "ChimeraAbilitySystemGlobals.h"
 #include "ChimeraAttributeSet.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogChimeraASC, Log, All);
+
 UChimeraAbilitySystemComponent::UChimeraAbilitySystemComponent()
 {
 
@@ -46,7 +48,7 @@ void UChimeraAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& Abili
 
 int32 UChimeraAbilitySystemComponent::HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload)
 {
-	UE_LOG(LogTemp, Verbose, TEXT("GameplayEvent %s"), *EventTag.ToString());
+	UE_LOG(LogChimeraASC, Verbose, TEXT("GameplayEvent %s"), *EventTag.ToString());
 
 	return Super::HandleGameplayEvent(EventTag, Payload);
 }
@@ -65,7 +67,7 @@ void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec
 		else if (CachedInputComponent.IsValid())
 		{
 			// agreene 2023/11/28 - #ToDo #Input I may want to look at unbinding from these events, but it shouldn't matter for now.
-			CachedInputComponent->BindAction(
+			FEnhancedInputActionEventBinding& Binding = CachedInputComponent->BindAction(
 				Ability->ActivationEvent.InputAction,
 				Ability->ActivationEvent.TriggerEvent,
 				this, &ThisClass::HandleInputEvent);
@@ -104,7 +106,7 @@ FGASInputEventDelegate& UChimeraAbilitySystemComponent::FindOrAddGASInputEventDe
 
 void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance& InputActionInstance)
 {
-	UE_LOG(LogTemp, Verbose, TEXT("Input Event %s - %s"),
+	UE_LOG(LogChimeraASC, Verbose, TEXT("Input Event %s - %s"),
 		*GetNameSafe(InputActionInstance.GetSourceAction()),
 		*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
 
@@ -118,7 +120,7 @@ void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No abilities found for %s : %s"), 
+		UE_LOG(LogChimeraASC, Warning, TEXT("No abilities found for %s : %s"),
 			*GetNameSafe(InputActionInstance.GetSourceAction()),
 			*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
 	}

@@ -12,6 +12,7 @@ class WEAPONS_API UWeaponsComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	//----- Overrides -----//
 public:
 
 	UWeaponsComponent();
@@ -23,17 +24,22 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
+	//----- Feature Methods -----//
 public:
+
+	UFUNCTION(BlueprintCallable)
+	static UWeaponsComponent* GetWeaponsComponent(AActor* Actor);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<class UStaticMeshComponent*> GetWeaponMeshes(FGameplayTagContainer WeaponSlots) const;
 
-	UFUNCTION(BlueprintCallable, meta = (Categories = "Weapons.Slot"))
-	void ActivateWeapon(FGameplayTagContainer WeaponSlots);
+	UFUNCTION(BlueprintCallable)
+	void ActivateWeapons(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTagContainer WeaponSlots);
 
-	UFUNCTION(BlueprintCallable, meta = (Categories = "Weapons.Slot"))
-	void DeactivateWeapon(FGameplayTagContainer WeaponSlots);
+	UFUNCTION(BlueprintCallable)
+	void DeactivateWeapons(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTagContainer WeaponSlots);
 
+	//----- Utility Methods -----//
 protected:
 
 	void CollectWeaponMeshes();
@@ -46,7 +52,8 @@ protected:
 		int32 OtherBodyIndex, 
 		bool bFromSweep, 
 		const FHitResult& SweepResult);
-
+	
+	//----- Class Settings -----//
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, config)
@@ -55,6 +62,7 @@ public:
 	//----- Instance Variables -----//
 protected:
 
+	// agreene 2023/12/5 - #ToDo #Weapons Should this be a FGameplayTagCountContainer?
 	UPROPERTY(VisibleAnywhere)
 	FGameplayTagContainer ActiveWeaponMeshes;
 

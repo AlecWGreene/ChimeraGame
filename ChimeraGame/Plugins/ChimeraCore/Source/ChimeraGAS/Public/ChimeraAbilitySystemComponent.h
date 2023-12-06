@@ -37,10 +37,9 @@ struct CHIMERAGAS_API FGASInputEvent
     }
 };
 
-// agreene 2023/12/5 - #ToDo #Input I suspect this is not generating the unique results for the hash that we want.
 FORCEINLINE uint32 GetTypeHash(const FGASInputEvent& Event)
 {
-    uint32 Hash = FCrc::MemCrc32(&Event, sizeof(FGASInputEvent));
+    const uint32 Hash = HashCombine(GetTypeHash(Event.InputAction), GetTypeHash(Event.TriggerEvent));
     return Hash;
 }
 
