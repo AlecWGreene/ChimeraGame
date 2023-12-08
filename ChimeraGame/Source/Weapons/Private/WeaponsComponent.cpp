@@ -99,6 +99,23 @@ const UWeaponData* UWeaponsComponent::GetWeaponData(FGameplayTag WeaponSlot) con
 	return DataPtr ? DataPtr->Get() : nullptr;
 }
 
+void UWeaponsComponent::GiveWeapon(FGameplayTag WeaponSlot, const UWeaponData* WeaponData)
+{
+	TObjectPtr<const UWeaponData>& SlotDataPtr = WeaponsBySlot.FindOrAdd(WeaponSlot);
+	SlotDataPtr = WeaponData;
+}
+
+bool UWeaponsComponent::EquipWeapon(FGameplayTag WeaponSlot, const UWeaponData* WeaponData)
+{
+	if (TObjectPtr<const UWeaponData>* SlotDataPtr = WeaponsBySlot.Find(WeaponSlot))
+	{
+		*SlotDataPtr = WeaponData;
+		return true;
+	}
+
+	return false;
+}
+
 void UWeaponsComponent::CollectWeaponMeshes()
 {
 	const AActor* Owner = GetOwner();

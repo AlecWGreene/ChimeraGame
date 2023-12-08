@@ -5,6 +5,7 @@
 #include "Engine/DataAsset.h"
 
 #include "ChimeraAttributeSet.h"
+#include "GameplayEffects/ChimeraEffectTypes.h"
 
 #include "WeaponData.generated.h"
 
@@ -17,5 +18,5 @@ class WEAPONS_API UWeaponData : public UPrimaryDataAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<class UGameplayEffect> HitEffect;
+	FGameplayEffectSpecDef HitEffect;
 };

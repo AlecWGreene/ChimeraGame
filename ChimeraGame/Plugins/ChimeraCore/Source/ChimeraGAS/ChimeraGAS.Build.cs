@@ -25,6 +25,7 @@ public class ChimeraGAS : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
+				"AIModule",
 				"Core",
 				"GameplayAbilities",
 				"GameplayTags",

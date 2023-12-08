@@ -35,6 +35,7 @@ void UDeathAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			"DeathMontageTask", 
 			const_cast<UAnimMontage*>(DeathMontage));
 		PlayMontage->OnCompleted.AddDynamic(this, &ThisClass::HandleMontageComplete);
+		PlayMontage->OnBlendOut.AddDynamic(this, &ThisClass::HandleMontageComplete);
 		PlayMontage->ReadyForActivation();
 	}
 }
