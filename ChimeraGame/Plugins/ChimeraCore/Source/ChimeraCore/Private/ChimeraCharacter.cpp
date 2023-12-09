@@ -13,6 +13,8 @@
 #include "InputMappingContext.h"
 
 #include "ChimeraAnimSet.h"
+#include "ChimeraAttributeSet.h"
+#include "ChimeraCharacterData.h"
 #include "ChimeraCoreTags.h"
 #include "ChimeraGASFunctionLibrary.h"
 #include "ChimeraInputComponent.h"
@@ -64,12 +66,34 @@ AChimeraCharacter::AChimeraCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AChimeraCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Apply character data
+	if (IsValid(CharacterData) && AbilitySystemComponent)
+	{
+		for (const UChimeraAttributeSetInitializer* Initializer : CharacterData->Attributes)
+		{
+			AbilitySystemComponent->ApplyInitializer(Initializer);
+		}
+
+		for (const FGameplayAbilitySpecDef& AbilitySpecDef : CharacterData->Abilities)
+		{
+			FGameplayAbilitySpec NewAbilitySpec = FGameplayAbilitySpec(AbilitySpecDef.Ability);
+			AbilitySystemComponent->GiveAbility(NewAbilitySpec);
+		}
+	}
+}
+
 void AChimeraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	AbilitySystemComponent->BindToInputComponent(PlayerInputComponent);
 
 	AChimeraPlayerController* PC = GetController<AChimeraPlayerController>();
 	check(PC);
@@ -146,14 +170,14 @@ void AChimeraCharacter::HandleLookInput(const FInputActionValue& InputActionValu
 	AddControllerPitchInput(-InputValue.Y);
 }
 
-const UChimeraAnimSet* AChimeraCharacter::GetAnimSetForMesh(const USkeletalMeshComponent* InMesh) const
+const UChimeraAnimSet* AChimeraCharacter::GetAnimSetForMesh(FGameplayTag AnimSetTag, const USkeletalMeshComponent* InMesh) const
 {
 	return nullptr;
 }
 
-const UAnimMontage* AChimeraCharacter::GetMontageByTag(FGameplayTag MontageTag, USkeletalMeshComponent* InMesh /*= nullptr*/) const
+const UAnimMontage* AChimeraCharacter::GetMontageByTag(FGameplayTag MontageTag, FGameplayTag AnimSetTag /*= FGameplayTag::EmptyTag*/, USkeletalMeshComponent* InMesh /*= nullptr*/) const
 {
-	if (const UChimeraAnimSet* AnimSet = GetAnimSetForMesh(InMesh == nullptr ? GetMesh() : InMesh))
+	if (const UChimeraAnimSet* AnimSet = GetAnimSetForMesh(AnimSetTag, InMesh == nullptr ? GetMesh() : InMesh))
 	{
 		if (const TObjectPtr<const UAnimMontage>* MontageEntry = AnimSet->Montages.Find(MontageTag))
 		{

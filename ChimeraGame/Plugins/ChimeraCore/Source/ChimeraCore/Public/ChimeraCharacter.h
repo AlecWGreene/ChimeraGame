@@ -20,6 +20,7 @@ public:
 	AChimeraCharacter();
 
 protected:
+	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//----- Components -----//
@@ -52,12 +53,24 @@ protected:
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 
 	//----- Animation -----//
-protected:
+public:
 
 	UFUNCTION(BlueprintPure)
-	virtual const class UChimeraAnimSet* GetAnimSetForMesh(const USkeletalMeshComponent* InMesh) const;
+	virtual const class UChimeraAnimSet* GetAnimSetForMesh( 
+		UPARAM(meta = (Categories = "Anim.Set")) FGameplayTag AnimSetTag, 
+		const USkeletalMeshComponent* InMesh) const;
 
 	/** Looks up the montage using the tag and the anim set for the provided mesh. Defaults to GetMesh when Mesh is not provided.*/
-	UFUNCTION(BlueprintPure, meta = (Categories = "Anim.Montage"))
-	virtual const UAnimMontage* GetMontageByTag(FGameplayTag MontageTag, USkeletalMeshComponent* InMesh = nullptr) const;
+	UFUNCTION(BlueprintPure)
+	virtual const UAnimMontage* GetMontageByTag(
+		UPARAM(meta = (Categories = "Anim.Montage")) FGameplayTag MontageTag, 
+		UPARAM(meta = (Categories = "Anim.Set")) FGameplayTag AnimSetTag = FGameplayTag(), 
+		USkeletalMeshComponent* InMesh = nullptr) const;
+
+	//----- Instance Variables -----//
+protected:
+
+	// agreene 11/29/2023 - #ToDo #Loading leaving this as a direct reference until the AssetLoader work is done
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<class UChimeraCharacterData> CharacterData;
 };

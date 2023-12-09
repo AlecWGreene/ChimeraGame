@@ -6,3 +6,13 @@ UChimeraAbilitySystemComponent* UChimeraGASFunctionLibrary::GetChimeraASC(const 
 {
 	return GetASCFromActor<UChimeraAbilitySystemComponent>(Actor);
 }
+
+FGameplayEffectSpecHandle UChimeraGASFunctionLibrary::MakeSpecFromDef(const UAbilitySystemComponent* ASC, FGameplayEffectContextHandle Context, const FGameplayEffectSpecDef& SpecDef)
+{
+	return SpecDef.CreateSpec(ASC, Context);
+}
+
+bool UChimeraGASFunctionLibrary::TargetDataFilterPassesForActor(const AActor* Actor, const FChimeraTargetDataFilter& Filter)
+{
+	return Filter.FilterPassesForActor(Actor);
+}

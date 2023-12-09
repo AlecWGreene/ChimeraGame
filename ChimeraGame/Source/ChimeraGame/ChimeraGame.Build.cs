@@ -20,5 +20,11 @@ public class ChimeraGame : ModuleRules
 			"InputCore", 
 			"HeadMountedDisplay", 
 			"EnhancedInput" });
+
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"Vitality",
+			"Weapons"
+		});
 	}
 }

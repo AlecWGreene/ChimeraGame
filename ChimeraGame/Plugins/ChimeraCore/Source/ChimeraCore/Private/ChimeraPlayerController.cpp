@@ -8,13 +8,14 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogChimeraPlayerController, Log, All);
 
-void AChimeraPlayerController::PostProcessInput(const float DeltaTime, const bool bPaused)
+void AChimeraPlayerController::EndPlay(EEndPlayReason::Type Reason)
 {
-	UChimeraAbilitySystemComponent* ASC = nullptr;
-	if (ASC)
-	{
-		ASC->ProcessAbilityInput(DeltaTime, bPaused);
-	}
+	Super::EndPlay(Reason);
 
-	Super::PostProcessInput(DeltaTime, bPaused);
+	// agreene 2023/12/4 - #ToDo #Input Figure out why we are binding too much
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->ClearActionEventBindings();
+		EnhancedInputComponent->ClearActionValueBindings();
+	}
 }

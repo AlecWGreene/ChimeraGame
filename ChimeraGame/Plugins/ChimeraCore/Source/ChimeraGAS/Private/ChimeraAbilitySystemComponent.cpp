@@ -1,132 +1,149 @@
 // Copyright Alec Greene. All Rights Reserved.
 #include "ChimeraAbilitySystemComponent.h"
 
-#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
-#include "ChimeraGAS\Public\ChimeraGameplayAbility.h"
-#include "ChimeraGAS\Public\ChimeraAbilitySystemGlobals.h"
-#include "ChimeraGAS\Public\ChimeraGASLogCategories.h"
+#include "EnhancedInputComponent.h"
+
+#include "Abilities/ChimeraGameplayAbility.h"
+#include "ChimeraAbilitySystemGlobals.h"
+#include "ChimeraAttributeSet.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogChimeraASC, Log, All);
 
 UChimeraAbilitySystemComponent::UChimeraAbilitySystemComponent()
 {
 
 }
 
-FGameplayTag UChimeraAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& Spec) const
+void UChimeraAbilitySystemComponent::BindToInputComponent(UInputComponent* InputComponent)
 {
-	// This function usually gets called after every ProcessInput call on the input component, so we want a fast way to weed out abilities which don't respond to inputs.
+	if (UEnhancedInputComponent* EnhancedInputCompoent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		CachedInputComponent = EnhancedInputCompoent;
+
+		for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+		{
+			BindAbilityInput(AbilitySpec);
+		}
+	}
+}
+
+void UChimeraAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	Super::OnGiveAbility(AbilitySpec);
+
+	if (AbilitySpec.Handle.IsValid())
+	{
+		BindAbilityInput(AbilitySpec);
+	}
+}
+
+void UChimeraAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Handle.IsValid())
+	{
+		UnbindAbilityInput(AbilitySpec);
+	}
+
+	Super::OnRemoveAbility(AbilitySpec);
+}
+
+int32 UChimeraAbilitySystemComponent::HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload)
+{
+	UE_LOG(LogChimeraASC, Verbose, TEXT("GameplayEvent %s"), *EventTag.ToString());
+
+	return Super::HandleGameplayEvent(EventTag, Payload);
+}
+
+void UChimeraAbilitySystemComponent::BindAbilityInput(const FGameplayAbilitySpec& Spec)
+{
 	const UChimeraGameplayAbility* Ability = Cast<UChimeraGameplayAbility>(Spec.Ability);
-	if (Ability && !(Ability->ActivationPolicy == EAbilityActivationPolicy::OnInputPressed || Ability->ActivationPolicy == EAbilityActivationPolicy::WhileInputHeld))
+	if (Ability
+		&& Ability->ActivationPolicy == EAbilityActivationPolicy::OnInput
+		&& Ability->ActivationEvent.IsValid())
 	{
-		return FGameplayTag::EmptyTag;
-	}
+		if (TSet<FGameplayAbilitySpecHandle>* AbilitySet = AbilityInputActivations.Find(Ability->ActivationEvent))
+		{
+			AbilitySet->Add(Spec.Handle);
+		}
+		else if (CachedInputComponent.IsValid())
+		{
+			// agreene 2023/11/28 - #ToDo #Input I may want to look at unbinding from these events, but it shouldn't matter for now.
+			FEnhancedInputActionEventBinding& Binding = CachedInputComponent->BindAction(
+				Ability->ActivationEvent.InputAction,
+				Ability->ActivationEvent.TriggerEvent,
+				this, &ThisClass::HandleInputEvent);
 
-	// Allow any dynamic ability tags to override the CDO
-	FGameplayTagContainer DynamicInputTags = Spec.DynamicAbilityTags.Filter(UChimeraAbilitySystemGlobals::Get().InputParentTag.GetSingleTagContainer());
-	if (!DynamicInputTags.IsEmpty())
-	{
-		return DynamicInputTags.First();
-	}
+			CachedInputComponent->BindActionValue(Ability->ActivationEvent.InputAction);
 
-	if (Ability)
-	{
-		return Ability->InputTag;
+			TSet<FGameplayAbilitySpecHandle>& NewAbilitySet = AbilityInputActivations.Add(Ability->ActivationEvent);
+			NewAbilitySet.Add(Spec.Handle);
+		}
 	}
-
-	return FGameplayTag::EmptyTag;
 }
 
-void UChimeraAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bPaused)
+void UChimeraAbilitySystemComponent::UnbindAbilityInput(const FGameplayAbilitySpec& Spec)
 {
-	static TArray<FGameplayAbilitySpecHandle> AbilitiesToActivate;
-
-	for (const FGameplayAbilitySpecHandle& SpecHandle : InputHeldHandles)
+	const UChimeraGameplayAbility* Ability = Cast<UChimeraGameplayAbility>(Spec.Ability);
+	if (Ability
+		&& Ability->ActivationPolicy == EAbilityActivationPolicy::OnInput
+		&& Ability->ActivationEvent.IsValid())
 	{
-		FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(SpecHandle);
-		if (Spec && !Spec->IsActive())
+		if (TSet<FGameplayAbilitySpecHandle>* AbilitySet = AbilityInputActivations.Find(Ability->ActivationEvent))
 		{
-			const UChimeraGameplayAbility* CDO = Cast<UChimeraGameplayAbility>(Spec->Ability);
-			if (CDO && CDO->ActivationPolicy == EAbilityActivationPolicy::WhileInputHeld)
+			AbilitySet->Remove(Spec.Handle);
+
+			if (AbilitySet->IsEmpty())
 			{
-				AbilitiesToActivate.Add(SpecHandle);
-			}
-		}
-	}
-
-	for (const FGameplayAbilitySpecHandle& SpecHandle : InputPressedHandles)
-	{
-		if (FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(SpecHandle))
-		{
-			if (Spec->IsActive())
-			{
-				Spec->InputPressed = true;
-				AbilitySpecInputPressed(*Spec);
-			}
-			else
-			{
-				const UChimeraGameplayAbility* CDO = Cast<UChimeraGameplayAbility>(Spec->Ability);
-				if (CDO && CDO->ActivationPolicy == EAbilityActivationPolicy::OnInputPressed)
-				{
-					AbilitiesToActivate.Add(SpecHandle);
-				}
-			}
-		}
-	}
-
-	for (const FGameplayAbilitySpecHandle& SpecHandle : AbilitiesToActivate)
-	{
-		TryActivateAbility(SpecHandle);
-	}
-
-	// We process InputReleasedHandles last to cover the case of pressing/releasing an input on same frame
-	for (const FGameplayAbilitySpecHandle& SpecHandle : InputReleasedHandles)
-	{
-		if (FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(SpecHandle))
-		{
-			Spec->InputPressed = false;
-
-			if (Spec->IsActive())
-			{
-				AbilitySpecInputReleased(*Spec);
-			}
-		}
-	}
-
-	InputPressedHandles.Reset();
-	InputReleasedHandles.Reset();
-}
-
-void UChimeraAbilitySystemComponent::AbilityInput_Pressed(FGameplayTag InputTag)
-{
-	if (InputTag.IsValid())
-	{
-		UE_LOG(LogChimeraAbilityInput, Verbose, TEXT("%s pressed"), *InputTag.ToString());
-
-		for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
-		{
-			FGameplayTag SpecInputTag = GetInputTagFromSpec(Spec);
-			if (SpecInputTag.IsValid() && SpecInputTag == InputTag)
-			{
-				InputPressedHandles.AddUnique(Spec.Handle);
-				InputHeldHandles.AddUnique(Spec.Handle);
+				AbilityInputActivations.Remove(Ability->ActivationEvent);
 			}
 		}
 	}
 }
 
-void UChimeraAbilitySystemComponent::AbilityInput_Released(FGameplayTag InputTag)
+FGASInputEventDelegate& UChimeraAbilitySystemComponent::FindOrAddGASInputEventDelegate(const FGASInputEvent& InputEvent)
 {
-	if (InputTag.IsValid())
-	{
-		UE_LOG(LogChimeraAbilityInput, Verbose, TEXT("%s released"), *InputTag.ToString());
+	return GASInputEventDelegates.FindOrAdd(InputEvent);
+}
 
-		for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
+void UChimeraAbilitySystemComponent::HandleInputEvent(const FInputActionInstance& InputActionInstance)
+{
+	UE_LOG(LogChimeraASC, Verbose, TEXT("Input Event %s - %s"),
+		*GetNameSafe(InputActionInstance.GetSourceAction()),
+		*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
+
+	FGASInputEvent InputEvent(InputActionInstance.GetSourceAction(), InputActionInstance.GetTriggerEvent());
+	if (TSet<FGameplayAbilitySpecHandle>* AbilitySet = AbilityInputActivations.Find(InputEvent))
+	{
+		for (FGameplayAbilitySpecHandle AbilitySpecHandle : *AbilitySet)
 		{
-			FGameplayTag SpecInputTag = GetInputTagFromSpec(Spec);
-			if (SpecInputTag.IsValid() && SpecInputTag == InputTag)
-			{
-				InputReleasedHandles.AddUnique(Spec.Handle);
-				InputHeldHandles.Remove(Spec.Handle);
-			}
+			TryActivateAbility(AbilitySpecHandle);
 		}
 	}
+	else
+	{
+		UE_LOG(LogChimeraASC, Warning, TEXT("No abilities found for %s : %s"),
+			*GetNameSafe(InputActionInstance.GetSourceAction()),
+			*UEnum::GetValueAsString(InputActionInstance.GetTriggerEvent()));
+	}
+
+	if (const FGASInputEventDelegate* InputEventDelegate = GASInputEventDelegates.Find(InputEvent))
+	{
+		InputEventDelegate->Broadcast(InputActionInstance);
+	}
+}
+
+const UAttributeSet* UChimeraAbilitySystemComponent::ApplyInitializer(const UChimeraAttributeSetInitializer* Initializer)
+{
+	if (IsValid(Initializer))
+	{
+		const UAttributeSet* Output = GetOrCreateAttributeSubobject(Initializer->AttributeSetClass);
+		if (IsValid(Output))
+		{
+			Initializer->InitializeAttributeSet(const_cast<UAttributeSet*>(Output));
+		}
+
+		return Output;
+	}
+
+	return nullptr;
 }
