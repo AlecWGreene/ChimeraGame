@@ -2,17 +2,21 @@
 
 #include "UtilityAI.h"
 
+#include "GameFramework/HUD.h"
+#include "Engine/Canvas.h"
+
+#include "UtilityAIComponent.h"
+
 #define LOCTEXT_NAMESPACE "FUtilityAIModule"
 
 void FUtilityAIModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	AHUD::OnShowDebugInfo.AddStatic(&UUtilityAIComponent::OnDisplayDebug);
 }
 
 void FUtilityAIModule::ShutdownModule()
 {
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
+	
 }
 
 #undef LOCTEXT_NAMESPACE

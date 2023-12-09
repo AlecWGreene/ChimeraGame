@@ -9,7 +9,7 @@ FGameplayTagContainer FUtilityFactors::GetReferenceKeys() const
     return FGameplayTagContainer::CreateFromArray(KeyArray);
 }
 
-bool FUtilityFactors::GetReference(FGameplayTag Key, const UObject* OutValue) const
+bool FUtilityFactors::GetReference(FGameplayTag Key, const UObject*& OutValue) const
 {
     if (const UObject* const* RefValue = References.Find(Key))
     {

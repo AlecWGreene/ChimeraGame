@@ -11,6 +11,40 @@ UUtilityAIComponent::UUtilityAIComponent()
 {
 }
 
+void UUtilityAIComponent::InitializeComponent()
+{
+}
+
+bool UUtilityAIComponent::IsRunning() const
+{
+	return false;
+}
+
+bool UUtilityAIComponent::IsPaused() const
+{
+	return false;
+}
+
+void UUtilityAIComponent::StartLogic()
+{
+}
+
+void UUtilityAIComponent::PauseLogic(const FString& Reason)
+{
+}
+
+void UUtilityAIComponent::RestartLogic()
+{
+}
+
+void UUtilityAIComponent::StopLogic(const FString& Reason)
+{
+}
+
+void UUtilityAIComponent::Cleanup()
+{
+}
+
 void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -51,7 +85,7 @@ void UUtilityAIComponent::UpdateReference(FGameplayTag ReferenceKey, const UObje
 	Factors.SetOrAddReference(ReferenceKey, Object);
 }
 
-void UUtilityAIComponent::OnDisplayDebug(AHUD* HUD, UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float YL, float YPos)
+void UUtilityAIComponent::OnDisplayDebug(AHUD* HUD, UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
 {
 	static const FName NAME_UtilityAI = "UtilityAI";
 	if (!HUD || !Canvas || !HUD->ShouldDisplayDebug(NAME_UtilityAI))
@@ -82,7 +116,7 @@ void UUtilityAIComponent::OnDisplayDebug(AHUD* HUD, UCanvas* Canvas, const FDebu
 	}
 }
 
-void UUtilityAIComponent::DisplayDebug(AHUD* HUD, UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float YL, float YPos)
+void UUtilityAIComponent::DisplayDebug(AHUD* HUD, UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
 {
 	FDisplayDebugManager& DisplayDebugManager = Canvas->DisplayDebugManager;
 

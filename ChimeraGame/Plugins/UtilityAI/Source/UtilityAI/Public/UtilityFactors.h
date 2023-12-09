@@ -17,7 +17,7 @@ public:
 
 	FGameplayTagContainer GetReferenceKeys() const;
 
-	bool GetReference(FGameplayTag Key, const UObject* OutValue) const;
+	bool GetReference(FGameplayTag Key, const UObject*& OutValue) const;
 	bool HasReference(FGameplayTag Key) const;
 	bool SetReference(FGameplayTag Key, const UObject* InValue);
 	void SetOrAddReference(FGameplayTag Key, const UObject* InValue);

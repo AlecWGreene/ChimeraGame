@@ -2,22 +2,37 @@
 
 #pragma once
 
+#include "BrainComponent.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
 
+#include "UtilityFactors.h"
+
 #include "UtilityAIComponent.generated.h"
 
-UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnable))
-class UTILITYAI_API UUtilityAIComponent : public UActorComponent
+UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnableComponent))
+class UTILITYAI_API UUtilityAIComponent : public UBrainComponent
 {
 	GENERATED_BODY()
+
+	friend class FUtilityAIModule;
 
 	//----- Overrides -----//
 public:
 
 	UUtilityAIComponent();
 
+	virtual void InitializeComponent() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual bool IsRunning() const override;
+	virtual bool IsPaused() const override;
+
+	virtual void StartLogic() override;
+	virtual void PauseLogic(const FString& Reason) override;
+	virtual void RestartLogic() override;
+	virtual void StopLogic(const FString& Reason) override;
+	virtual void Cleanup() override;
 
 	//----- Lifecycle -----//
 protected:
@@ -36,9 +51,8 @@ public:
 
 	//----- Debug -----//
 protected:
-
-	static void OnDisplayDebug(class AHUD* HUD, class UCanvas* Canvas, const class FDebugDisplayInfo& DebugDisplay, float YL, float YPos);
-	virtual void DisplayDebug(class AHUD* HUD, class UCanvas* Canvas, const class FDebugDisplayInfo& DebugDisplay, float YL, float YPos);
+	static void OnDisplayDebug(class AHUD* HUD, class UCanvas* Canvas, const class FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos);
+	virtual void DisplayDebug(class AHUD* HUD, class UCanvas* Canvas, const class FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos);
 
 	//----- Class Settings -----//
 protected:
