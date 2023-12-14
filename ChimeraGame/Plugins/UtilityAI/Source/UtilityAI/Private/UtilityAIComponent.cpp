@@ -12,6 +12,13 @@ UUtilityAIComponent::UUtilityAIComponent()
 
 void UUtilityAIComponent::InitializeComponent()
 {
+	for (TPair<FGameplayTag, TObjectPtr<class UUtilityAction>> ActionItem : Actions)
+	{
+		if (ensureMsgf(IsValid(ActionItem.Value), TEXT("Invalid action in %s under key %s"), *GetNameSafe(this), *ActionItem.Key.ToString()))
+		{
+			ActionItem.Value->Initialize(this);
+		}
+	}
 }
 
 bool UUtilityAIComponent::IsRunning() const
@@ -62,6 +69,27 @@ void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateDesires(DeltaTime);
+
+	if (ActiveAction == nullptr || !ActiveAction->IsActive())
+	{
+		float BestScore = 0.f;
+		for (TPair<FGameplayTag, float> Desire : ActionDesires)
+		{
+			if (Desire.Value > BestScore)
+			{
+				TObjectPtr<UUtilityAction>* ActionPtr = Actions.Find(Desire.Key);
+				if (ActionPtr && IsValid(*ActionPtr))
+				{
+					ActiveAction = *ActionPtr;
+				}
+			}
+		}
+
+		if (ActiveAction)
+		{
+			ActiveAction->Activate();
+		}
+	}
 }
 
 void UUtilityAIComponent::UpdateDesires(float DeltaTime)
@@ -71,7 +99,7 @@ void UUtilityAIComponent::UpdateDesires(float DeltaTime)
 		if (IsValid(ActionSlot.Value))
 		{
 			float& Desire = ActionDesires.FindOrAdd(ActionSlot.Key);
-			Desire = ActionSlot.Value->ComputeDesire(DeltaTime, Desire, GetBlackboardComponent());
+			Desire = ActionSlot.Value->ComputeDesire(DeltaTime, Desire);
 		}
 	}
 }

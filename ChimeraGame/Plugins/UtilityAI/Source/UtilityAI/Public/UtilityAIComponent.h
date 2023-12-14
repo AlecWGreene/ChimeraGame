@@ -46,11 +46,18 @@ protected:
 protected:
 
 	// agreene 2023/11/30 - #ToDo #UtilityAI Allow add/removal of actions
-	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow))
+	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow, Categories = ""))
 	TMap<FGameplayTag, TObjectPtr<class UUtilityAction>> Actions;
+
+	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow, Categories = ""))
+	TMap<FGameplayTag, TObjectPtr<class UObject>> DecisionFactorCalculations;
 
 	//----- Instance Variables -----//
 protected:
+
+	class UUtilityAction* ActiveAction{ nullptr };
+
+	TMap<FGameplayTag, float> DecisionFactors;
 
 	/** Cached off action desires, which allows us to look up desires without having to ask the UtilityAction. */
 	TMap<FGameplayTag, float> ActionDesires;
