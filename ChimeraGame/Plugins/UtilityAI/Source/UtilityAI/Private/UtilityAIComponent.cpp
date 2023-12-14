@@ -1,6 +1,7 @@
 // Copyright Alec Greene. All Rights Reserved.
 #include "UtilityAIComponent.h"
 
+#include "AIController.h"
 #include "GameFramework/HUD.h"
 #include "Engine/Canvas.h"
 
@@ -8,10 +9,17 @@
 
 UUtilityAIComponent::UUtilityAIComponent()
 {
+	bWantsInitializeComponent = true;
 }
 
 void UUtilityAIComponent::InitializeComponent()
 {
+	if (AAIController* Owner = GetOwner<AAIController>())
+	{
+		UBlackboardComponent* BBComponent = Owner->GetBlackboardComponent();
+		Owner->UseBlackboard(Blackboard, BBComponent);
+	}
+
 	for (TPair<FGameplayTag, TObjectPtr<class UUtilityAction>> ActionItem : Actions)
 	{
 		if (ensureMsgf(IsValid(ActionItem.Value), TEXT("Invalid action in %s under key %s"), *GetNameSafe(this), *ActionItem.Key.ToString()))
@@ -58,7 +66,19 @@ FString UUtilityAIComponent::GetDebugInfoString() const
 	// Display Actions
 	for (TPair<FGameplayTag, float> DesireData : ActionDesires)
 	{
-		Output += FString::Printf(TEXT("\t%s = %f\n"), *DesireData.Key.ToString(), DesireData.Value);
+		const TObjectPtr<UUtilityAction>* DesireActionPtr = Actions.Find(DesireData.Key);
+		if (DesireActionPtr && *DesireActionPtr == ActiveAction)
+		{
+			Output += FString::Printf(TEXT("\t%s = %3f [Active]\n"), *DesireData.Key.ToString(), DesireData.Value);
+			for (const UGameplayTask* Task : ActiveAction->ActiveTasks)
+			{
+				Output += FString::Printf(TEXT("\t\t%s\n"), *GetNameSafe(Task));
+			}
+		}
+		else
+		{
+			Output += FString::Printf(TEXT("\t%s = %3f\n"), *DesireData.Key.ToString(), DesireData.Value);
+		}
 	}
 
 	return Output;

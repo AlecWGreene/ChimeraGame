@@ -45,6 +45,9 @@ protected:
 	//----- Class Settings -----//
 protected:
 
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UBlackboardData> Blackboard;
+
 	// agreene 2023/11/30 - #ToDo #UtilityAI Allow add/removal of actions
 	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow, Categories = ""))
 	TMap<FGameplayTag, TObjectPtr<class UUtilityAction>> Actions;
