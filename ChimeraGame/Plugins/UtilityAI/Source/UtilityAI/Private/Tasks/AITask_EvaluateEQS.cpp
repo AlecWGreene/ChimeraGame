@@ -49,20 +49,23 @@ void UAITask_EvaluateEQS::HandleEQSRequestComplete(TSharedPtr<FEnvQueryResult> R
 		{
 			TArray<FVector> LocationItems;
 			TArray<AActor*> ActorItems;
-			if (Result->ItemType->IsChildOf(UEnvQueryItemType_VectorBase::StaticClass()))
+
+			UEnvQueryItemType* ItemTypeCDO = Result->ItemType->GetDefaultObject<UEnvQueryItemType>();
+			if (ItemTypeCDO->IsA(UEnvQueryItemType_VectorBase::StaticClass()))
 			{
+				UEnvQueryItemType_VectorBase* VectorItemTypeCDO = Cast<UEnvQueryItemType_VectorBase>(ItemTypeCDO);
 				for (const FEnvQueryItem& Item : Result->Items)
 				{
-					FVector ItemLocation = GetMutableDefault<UEnvQueryItemType_VectorBase>()->GetItemLocation(Result->RawData.GetData() + Item.DataOffset);
+					FVector ItemLocation = VectorItemTypeCDO->GetItemLocation(Result->RawData.GetData() + Item.DataOffset);
 					LocationItems.Add(ItemLocation);
 				}
 			}
-			else if (Result->ItemType->IsChildOf(UEnvQueryItemType_ActorBase::StaticClass()))
+			else if (ItemTypeCDO->IsA(UEnvQueryItemType_ActorBase::StaticClass()))
 			{
-				
+				UEnvQueryItemType_ActorBase* ActorItemTypeCDO = Cast<UEnvQueryItemType_ActorBase>(ItemTypeCDO);
 				for (const FEnvQueryItem& Item : Result->Items)
 				{
-					AActor* ItemActor = GetMutableDefault<UEnvQueryItemType_ActorBase>()->GetActor(Result->RawData.GetData() + Item.DataOffset);
+					AActor* ItemActor = ActorItemTypeCDO->GetActor(Result->RawData.GetData() + Item.DataOffset);
 					ActorItems.Add(ItemActor);
 				}
 			}
