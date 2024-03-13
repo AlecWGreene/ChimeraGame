@@ -14,10 +14,15 @@ UUtilityAIComponent::UUtilityAIComponent()
 
 void UUtilityAIComponent::InitializeComponent()
 {
+	Super::InitializeComponent();
+
 	if (AAIController* Owner = GetOwner<AAIController>())
 	{
 		UBlackboardComponent* BBComponent = Owner->GetBlackboardComponent();
 		Owner->UseBlackboard(Blackboard, BBComponent);
+
+		Owner->BrainComponent = this;
+		BlackboardComp = BBComponent;
 	}
 
 	for (TPair<FGameplayTag, TObjectPtr<class UUtilityAction>> ActionItem : Actions)
