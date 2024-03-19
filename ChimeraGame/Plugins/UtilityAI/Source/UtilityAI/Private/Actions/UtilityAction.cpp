@@ -1,5 +1,5 @@
 // Copyright Alec Greene. All Rights Reserved.
-#include "UtilityAction.h"
+#include "Actions/UtilityAction.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -7,6 +7,8 @@
 #include "Tasks/AITask.h"
 
 #include "UtilityAIComponent.h"
+
+DEFINE_LOG_CATEGORY(LogUtilityAction);
 
 UUtilityAction::UUtilityAction()
 {

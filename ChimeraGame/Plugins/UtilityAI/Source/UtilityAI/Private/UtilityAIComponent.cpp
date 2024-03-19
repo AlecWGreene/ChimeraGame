@@ -5,7 +5,7 @@
 #include "GameFramework/HUD.h"
 #include "Engine/Canvas.h"
 
-#include "UtilityAction.h"
+#include "Actions/UtilityAction.h"
 
 UUtilityAIComponent::UUtilityAIComponent()
 {
@@ -106,6 +106,7 @@ void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 				if (ActionPtr && IsValid(*ActionPtr))
 				{
 					ActiveAction = *ActionPtr;
+					BestScore = Desire.Value;
 				}
 			}
 		}
