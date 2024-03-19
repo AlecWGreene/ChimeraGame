@@ -7,6 +7,8 @@
 
 #include "UtilityAction.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogUtilityAction, Log, All);
+
 UCLASS(Abstract, BlueprintType, Blueprintable, DefaultToInstanced, EditInlineNew)
 class UTILITYAI_API UUtilityAction : public UObject, public IGameplayTaskOwnerInterface
 {
