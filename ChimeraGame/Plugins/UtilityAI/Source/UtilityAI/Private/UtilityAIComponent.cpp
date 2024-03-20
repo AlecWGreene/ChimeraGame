@@ -6,6 +6,9 @@
 #include "Engine/Canvas.h"
 
 #include "Actions/UtilityAction.h"
+#include "Actions/UtilityActionSet.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogUtilityAIComponent, Log, All);
 
 UUtilityAIComponent::UUtilityAIComponent()
 {
@@ -16,6 +19,11 @@ void UUtilityAIComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	if (ActionSet)
+	{
+		UpdateActionSet(ActionSet);
+	}
+
 	if (AAIController* Owner = GetOwner<AAIController>())
 	{
 		UBlackboardComponent* BBComponent = Owner->GetBlackboardComponent();
@@ -25,12 +33,26 @@ void UUtilityAIComponent::InitializeComponent()
 		BlackboardComp = BBComponent;
 	}
 
-	for (TPair<FGameplayTag, TObjectPtr<class UUtilityAction>> ActionItem : Actions)
+	for (TPair<FGameplayTag, TObjectPtr<class UUtilityAction>> ActionItem : AvailableActions)
 	{
 		if (ensureMsgf(IsValid(ActionItem.Value), TEXT("Invalid action in %s under key %s"), *GetNameSafe(this), *ActionItem.Key.ToString()))
 		{
 			ActionItem.Value->Initialize(this);
 		}
+	}
+}
+
+void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// agreene 2024/03/19 - #ToDo #UtilityAI Sort out how and when desires are updated
+	UpdateDesires(DeltaTime);
+
+	// agreene 2024/03/19 - #ToDo #UtilityAI While initialization pipeline is under construction, try to fix situations in which we're doing nothing
+	if (!ActiveAction || !ActiveAction->bActive)
+	{
+		SelectNewAction();
 	}
 }
 
@@ -71,7 +93,7 @@ FString UUtilityAIComponent::GetDebugInfoString() const
 	// Display Actions
 	for (TPair<FGameplayTag, float> DesireData : ActionDesires)
 	{
-		const TObjectPtr<UUtilityAction>* DesireActionPtr = Actions.Find(DesireData.Key);
+		const TObjectPtr<UUtilityAction>* DesireActionPtr = AvailableActions.Find(DesireData.Key);
 		if (DesireActionPtr && *DesireActionPtr == ActiveAction)
 		{
 			Output += FString::Printf(TEXT("\t%s = %3f [Active]\n"), *DesireData.Key.ToString(), DesireData.Value);
@@ -89,43 +111,94 @@ FString UUtilityAIComponent::GetDebugInfoString() const
 	return Output;
 }
 
-void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UUtilityAIComponent::UpdateActionSet(UUtilityActionSet* InActionSet)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	UpdateDesires(DeltaTime);
-
-	if (ActiveAction == nullptr || !ActiveAction->IsActive())
+	// Cleanup old ActionSet
+	if (ActionSet)
 	{
-		float BestScore = 0.f;
-		for (TPair<FGameplayTag, float> Desire : ActionDesires)
+		for (const TPair<FGameplayTag, UUtilityAction*>& ActionSetSlot : ActionSet->Actions)
 		{
-			if (Desire.Value > BestScore)
-			{
-				TObjectPtr<UUtilityAction>* ActionPtr = Actions.Find(Desire.Key);
-				if (ActionPtr && IsValid(*ActionPtr))
-				{
-					ActiveAction = *ActionPtr;
-					BestScore = Desire.Value;
-				}
-			}
+			AvailableActions.Remove(ActionSetSlot.Key);
 		}
+	}
 
-		if (ActiveAction)
+	ActionSet = InActionSet;
+
+	// Add new ActionSet
+	if (InActionSet)
+	{
+		const float DeltaTime = GetWorld()->DeltaTimeSeconds;
+		for (const TPair<FGameplayTag, UUtilityAction*>& ActionSetSlot : InActionSet->Actions)
 		{
-			ActiveAction->Activate();
+			if (!AvailableActions.Contains(ActionSetSlot.Key))
+			{
+				AvailableActions.Add(ActionSetSlot);
+			}
+			else
+			{
+				UE_LOG(LogUtilityAIComponent, Warning, TEXT("Attempted to add %s for ActionSet %s, but key is already in use."), 
+					*ActionSetSlot.Key.ToString(), *GetNameSafe(InActionSet));
+			}
 		}
 	}
 }
 
 void UUtilityAIComponent::UpdateDesires(float DeltaTime)
 {
-	for (const TPair<FGameplayTag, UUtilityAction*>& ActionSlot : Actions)
+	for (const TPair<FGameplayTag, UUtilityAction*>& ActionSlot : AvailableActions)
 	{
 		if (IsValid(ActionSlot.Value))
 		{
 			float& Desire = ActionDesires.FindOrAdd(ActionSlot.Key);
 			Desire = ActionSlot.Value->ComputeDesire(DeltaTime, Desire);
 		}
+	}
+}
+
+void UUtilityAIComponent::SelectNewAction()
+{
+	if (!ActionOverrides.IsEmpty())
+	{
+		// agreene 2024/03/19 - #ToDo #UtilityAI Implement override priority
+		for (FGameplayTag OverrideKey : ActionOverrides)
+		{
+			if (TObjectPtr<UUtilityAction>* ActionPtr = AvailableActions.Find(OverrideKey))
+			{
+				if (*ActionPtr && (*ActionPtr)->CanActivate())
+				{
+					if (*ActionPtr)
+					{
+						ActiveAction = *ActionPtr;
+						ActiveAction->Activate();
+						return;
+					}
+				}
+			}
+		}
+	}
+	
+	UUtilityAction* SelectedAction = nullptr;
+	float BestDesire = -1.f;
+	for (const TPair<FGameplayTag, float>& Desire : ActionDesires)
+	{
+		if (BestDesire < Desire.Value)
+		{
+			TObjectPtr<UUtilityAction>* ActionPtr = AvailableActions.Find(Desire.Key);
+			if (ActionPtr && *ActionPtr && (*ActionPtr)->CanActivate())
+			{
+				SelectedAction = *ActionPtr;
+				BestDesire = Desire.Value;
+			}
+		}
+	}
+
+	if (SelectedAction)
+	{
+		ActiveAction = SelectedAction;
+		ActiveAction->Activate();
+	}
+	else
+	{
+		UE_LOG(LogUtilityAIComponent, Warning, TEXT("Failed to select new action."));
 	}
 }

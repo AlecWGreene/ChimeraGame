@@ -32,10 +32,16 @@ public:
 	virtual void StopLogic(const FString& Reason) override;
 	virtual void Cleanup() override;
 
-	//----- Lifecycle -----//
+	//----- Feature Methods -----//
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateActionSet(class UUtilityActionSet* InActionSet);
+
 protected:
 
 	virtual void UpdateDesires(float DeltaTime);
+	virtual void SelectNewAction();
 
 	//----- Debug -----//
 protected:
@@ -46,23 +52,23 @@ protected:
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UBlackboardData> Blackboard;
-
-	// agreene 2024/03/18 - #ToDo #UtilityAI Plan out inheritance of actions, and where data should live
-	// agreene 2023/11/30 - #ToDo #UtilityAI Allow add/removal of actions
-	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow, Categories = ""))
-	TMap<FGameplayTag, TObjectPtr<class UUtilityAction>> Actions;
-
-	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow, Categories = ""))
-	TMap<FGameplayTag, TObjectPtr<class UObject>> DecisionFactorCalculations;
+	TObjectPtr<class UUtilityActionSet> ActionSet;
 
 	//----- Instance Variables -----//
 protected:
 
-	class UUtilityAction* ActiveAction{ nullptr };
+	UPROPERTY()
+	TObjectPtr<class UBlackboardData> Blackboard;
 
-	TMap<FGameplayTag, float> DecisionFactors;
+	UPROPERTY()
+	TMap<FGameplayTag, TObjectPtr<class UUtilityAction>> AvailableActions;
 
-	/** Cached off action desires, which allows us to look up desires without having to ask the UtilityAction. */
+	/** Actions which are requested to be activated regardless of utility. */
+	FGameplayTagContainer ActionOverrides;
+
+	/** Cached desires for each action. */
 	TMap<FGameplayTag, float> ActionDesires;
+
+	UPROPERTY()
+	class UUtilityAction* ActiveAction{ nullptr };
 };
