@@ -57,6 +57,8 @@ protected:
 	//----- Instance Variables -----//
 protected:
 
+	bool bLogicRunning{ true };
+
 	UPROPERTY()
 	TObjectPtr<class UBlackboardData> Blackboard;
 

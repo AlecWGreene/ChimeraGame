@@ -46,19 +46,22 @@ void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// agreene 2024/03/19 - #ToDo #UtilityAI Sort out how and when desires are updated
-	UpdateDesires(DeltaTime);
-
-	// agreene 2024/03/19 - #ToDo #UtilityAI While initialization pipeline is under construction, try to fix situations in which we're doing nothing
-	if (!ActiveAction || !ActiveAction->bActive)
+	if (bLogicRunning)
 	{
-		SelectNewAction();
+		// agreene 2024/03/19 - #ToDo #UtilityAI Sort out how and when desires are updated
+		UpdateDesires(DeltaTime);
+
+		// agreene 2024/03/19 - #ToDo #UtilityAI While initialization pipeline is under construction, try to fix situations in which we're doing nothing
+		if (!ActiveAction || !ActiveAction->bActive)
+		{
+			SelectNewAction();
+		}
 	}
 }
 
 bool UUtilityAIComponent::IsRunning() const
 {
-	return false;
+	return ActiveAction != nullptr;
 }
 
 bool UUtilityAIComponent::IsPaused() const
@@ -68,10 +71,21 @@ bool UUtilityAIComponent::IsPaused() const
 
 void UUtilityAIComponent::StartLogic()
 {
+	bLogicRunning = true;
+
+	if (ActiveAction)
+	{
+		ActiveAction->Activate();
+	}
+	else
+	{
+		SelectNewAction();
+	}
 }
 
 void UUtilityAIComponent::PauseLogic(const FString& Reason)
 {
+
 }
 
 void UUtilityAIComponent::RestartLogic()
@@ -80,6 +94,13 @@ void UUtilityAIComponent::RestartLogic()
 
 void UUtilityAIComponent::StopLogic(const FString& Reason)
 {
+	bLogicRunning = false;
+
+	if (ActiveAction)
+	{
+		ActiveAction->End(true);
+		ActiveAction = nullptr;
+	}
 }
 
 void UUtilityAIComponent::Cleanup()
