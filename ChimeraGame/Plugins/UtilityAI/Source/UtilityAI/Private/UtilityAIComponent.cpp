@@ -2,6 +2,7 @@
 #include "UtilityAIComponent.h"
 
 #include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/HUD.h"
 #include "Engine/Canvas.h"
 
@@ -19,18 +20,14 @@ void UUtilityAIComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	if (AAIController* Owner = GetOwner<AAIController>())
+	{
+		Owner->BrainComponent = this;
+	}
+
 	if (ActionSet)
 	{
 		UpdateActionSet(ActionSet);
-	}
-
-	if (AAIController* Owner = GetOwner<AAIController>())
-	{
-		UBlackboardComponent* BBComponent = Owner->GetBlackboardComponent();
-		Owner->UseBlackboard(Blackboard, BBComponent);
-
-		Owner->BrainComponent = this;
-		BlackboardComp = BBComponent;
 	}
 
 	for (TPair<FGameplayTag, TObjectPtr<class UUtilityAction>> ActionItem : AvailableActions)
@@ -148,6 +145,17 @@ void UUtilityAIComponent::UpdateActionSet(UUtilityActionSet* InActionSet)
 	// Add new ActionSet
 	if (InActionSet)
 	{
+		if (InActionSet->Blackboard)
+		{
+			if (AAIController* Owner = GetOwner<AAIController>())
+			{
+				UBlackboardComponent* BBComponent = Owner->GetBlackboardComponent();
+				Owner->UseBlackboard(InActionSet->Blackboard, BBComponent);
+
+				BlackboardComp = BBComponent;
+			}
+		}
+
 		const float DeltaTime = GetWorld()->DeltaTimeSeconds;
 		for (const TPair<FGameplayTag, UUtilityAction*>& ActionSetSlot : InActionSet->Actions)
 		{
