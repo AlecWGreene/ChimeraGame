@@ -155,8 +155,12 @@ void UUtilityAIComponent::UpdateActionSet(UUtilityActionSet* InActionSet)
 			{
 				if (ensureMsgf(IsValid(ActionSetSlot.Value), TEXT("Invalid action in %s under key %s"), *GetNameSafe(this), *ActionSetSlot.Key.ToString()))
 				{
-					ActionSetSlot.Value->Initialize(this);
-					AvailableActions.Add(ActionSetSlot);
+					UUtilityAction* ActionInstance = NewObject<UUtilityAction>(this, ActionSetSlot.Value->GetClass(), NAME_None, RF_Transient, ActionSetSlot.Value);
+					if (ActionInstance)
+					{
+						ActionInstance->Initialize(this);
+						AvailableActions.Add(ActionSetSlot.Key, ActionInstance);
+					}
 				}
 			}
 			else
