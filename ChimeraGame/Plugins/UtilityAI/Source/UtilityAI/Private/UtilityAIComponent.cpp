@@ -29,14 +29,6 @@ void UUtilityAIComponent::InitializeComponent()
 	{
 		UpdateActionSet(ActionSet);
 	}
-
-	for (TPair<FGameplayTag, TObjectPtr<class UUtilityAction>> ActionItem : AvailableActions)
-	{
-		if (ensureMsgf(IsValid(ActionItem.Value), TEXT("Invalid action in %s under key %s"), *GetNameSafe(this), *ActionItem.Key.ToString()))
-		{
-			ActionItem.Value->Initialize(this);
-		}
-	}
 }
 
 void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -161,7 +153,11 @@ void UUtilityAIComponent::UpdateActionSet(UUtilityActionSet* InActionSet)
 		{
 			if (!AvailableActions.Contains(ActionSetSlot.Key))
 			{
-				AvailableActions.Add(ActionSetSlot);
+				if (ensureMsgf(IsValid(ActionSetSlot.Value), TEXT("Invalid action in %s under key %s"), *GetNameSafe(this), *ActionSetSlot.Key.ToString()))
+				{
+					ActionSetSlot.Value->Initialize(this);
+					AvailableActions.Add(ActionSetSlot);
+				}
 			}
 			else
 			{
