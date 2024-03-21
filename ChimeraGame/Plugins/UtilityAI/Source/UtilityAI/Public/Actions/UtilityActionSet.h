@@ -15,6 +15,11 @@ class UTILITYAI_API UUtilityActionSet : public UDataAsset
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow, Categories = ""))
+	/**  */
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UBlackboardData> Blackboard;
+
+	/**  */
+	UPROPERTY(EditDefaultsOnly, Instanced, meta = (ForceInlineRow, Categories = "UActionCategory"))
 	TMap<FGameplayTag, TObjectPtr<class UUtilityAction>> Actions;
 };

@@ -80,7 +80,7 @@ float UUtilityAction::ComputeDesire_Implementation(float DeltaTime, float Previo
 
 bool UUtilityAction::CanActivate_Implementation() const
 {
-	return false;
+	return true;
 }
 
 void UUtilityAction::Activate_Implementation()
