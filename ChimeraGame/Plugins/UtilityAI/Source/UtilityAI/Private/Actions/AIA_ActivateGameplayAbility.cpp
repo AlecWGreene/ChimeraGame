@@ -6,6 +6,12 @@
 
 bool UAIA_ActivateGameplayAbility::CanActivate_Implementation() const
 {
+    if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatar()))
+    {
+        // agreene 2024/03/29 - #ToDo Set this up to use the GA CanActivateAbility
+        return true;
+    }
+
     return false;
 }
 

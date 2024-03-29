@@ -31,7 +31,7 @@ public:
 	static UWeaponsComponent* GetWeaponsComponent(AActor* Actor);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<class UStaticMeshComponent*> GetWeaponMeshes(FGameplayTagContainer WeaponSlots) const;
+	TArray<class UPrimitiveComponent*> GetWeaponMeshes(FGameplayTagContainer WeaponSlots) const;
 
 	UFUNCTION(BlueprintCallable)
 	void ActivateWeapons(UPARAM(meta = (Categories = "Weapons.Slot")) FGameplayTagContainer WeaponSlots);
@@ -79,9 +79,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, meta = (ForceInlineRow, Categories = "Weapons.Slot"))
 	TMap<FGameplayTag, TObjectPtr<const class UWeaponData>> WeaponsBySlot;
 
-	/** References to weapon meshes on the owning actor, used to visualize weapons. */
+	/** References to primitive components on the owning actor, used to detect collision. */
 	UPROPERTY(VisibleAnywhere, meta = (ForceInlineRow, Categories = "Weapons.Slot"))
-	TMap<FGameplayTag, TWeakObjectPtr<class UStaticMeshComponent>> WeaponMeshesBySlot;
+	TMap<FGameplayTag, TWeakObjectPtr<class UPrimitiveComponent>> CollisionComponentsBySlot;
 
 	TWeakObjectPtr<class UChimeraAbilitySystemComponent> AbilitySystemComponent;
 };
