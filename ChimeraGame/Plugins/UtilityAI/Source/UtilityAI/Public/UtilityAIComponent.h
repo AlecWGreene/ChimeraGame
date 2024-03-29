@@ -38,6 +38,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateActionSet(class UUtilityActionSet* InActionSet);
 
+	UFUNCTION(BlueprintCallable)
+	void AddActionOverride(FGameplayTag ActionOverride);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveActionOverride(FGameplayTag ActionOverride);
+
 protected:
 
 	virtual void UpdateDesires(float DeltaTime);

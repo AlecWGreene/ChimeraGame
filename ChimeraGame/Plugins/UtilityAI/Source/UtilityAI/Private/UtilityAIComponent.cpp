@@ -172,6 +172,16 @@ void UUtilityAIComponent::UpdateActionSet(UUtilityActionSet* InActionSet)
 	}
 }
 
+void UUtilityAIComponent::AddActionOverride(FGameplayTag ActionOverride)
+{
+	ActionOverrides.AddTag(ActionOverride);
+}
+
+void UUtilityAIComponent::RemoveActionOverride(FGameplayTag ActionOverride)
+{
+	ActionOverrides.RemoveTag(ActionOverride);
+}
+
 void UUtilityAIComponent::UpdateDesires(float DeltaTime)
 {
 	for (const TPair<FGameplayTag, UUtilityAction*>& ActionSlot : AvailableActions)
