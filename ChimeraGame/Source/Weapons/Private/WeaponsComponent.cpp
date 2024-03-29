@@ -41,16 +41,16 @@ UWeaponsComponent* UWeaponsComponent::GetWeaponsComponent(AActor* Actor)
 	return Actor ? Actor->FindComponentByClass<UWeaponsComponent>() : nullptr;
 }
 
-TArray<UStaticMeshComponent*> UWeaponsComponent::GetWeaponMeshes(FGameplayTagContainer WeaponSlots) const
+TArray<UPrimitiveComponent*> UWeaponsComponent::GetWeaponMeshes(FGameplayTagContainer WeaponSlots) const
 {
-	TArray<UStaticMeshComponent*> Output;
+	TArray<UPrimitiveComponent*> Output;
 
 	for (FGameplayTag SlotTag : WeaponSlots)
 	{
-		const TWeakObjectPtr<UStaticMeshComponent>* MeshComponentPtr = WeaponMeshesBySlot.Find(SlotTag);
-		if (MeshComponentPtr && MeshComponentPtr->IsValid())
+		const TWeakObjectPtr<UPrimitiveComponent>* CollisionComponentPtr = CollisionComponentsBySlot.Find(SlotTag);
+		if (CollisionComponentPtr && CollisionComponentPtr->IsValid())
 		{
-			Output.Add(MeshComponentPtr->Get());
+			Output.Add(CollisionComponentPtr->Get());
 		}
 	}
 
@@ -63,13 +63,17 @@ void UWeaponsComponent::ActivateWeapons(FGameplayTagContainer WeaponSlots)
 	{
 		if (!ActiveWeaponMeshes.HasTagExact(SlotTag))
 		{
-			const TWeakObjectPtr<UStaticMeshComponent>* MeshComponentPtr = WeaponMeshesBySlot.Find(SlotTag);
-			if (MeshComponentPtr && MeshComponentPtr->IsValid())
+			const TWeakObjectPtr<UPrimitiveComponent>* CollisionComponentPtr = CollisionComponentsBySlot.Find(SlotTag);
+			if (CollisionComponentPtr && CollisionComponentPtr->IsValid())
 			{
-				UStaticMeshComponent* MeshComponent = MeshComponentPtr->Get();
-				MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HandleWeaponOverlap);
+				UPrimitiveComponent* CollisionComponent = CollisionComponentPtr->Get();
+				CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HandleWeaponOverlap);
 
 				ActiveWeaponMeshes.AddTag(SlotTag);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Failed to find collision component for slot %s"), *SlotTag.ToString());
 			}
 		}
 	}
@@ -81,11 +85,11 @@ void UWeaponsComponent::DeactivateWeapons(FGameplayTagContainer WeaponSlots)
 	{
 		if (ActiveWeaponMeshes.HasTagExact(SlotTag))
 		{
-			const TWeakObjectPtr<UStaticMeshComponent>* MeshComponentPtr = WeaponMeshesBySlot.Find(SlotTag);
-			if (MeshComponentPtr && MeshComponentPtr->IsValid())
+			const TWeakObjectPtr<UPrimitiveComponent>* CollisionComponentPtr = CollisionComponentsBySlot.Find(SlotTag);
+			if (CollisionComponentPtr && CollisionComponentPtr->IsValid())
 			{
-				UStaticMeshComponent* MeshComponent = MeshComponentPtr->Get();
-				MeshComponent->OnComponentBeginOverlap.RemoveDynamic(this, &ThisClass::HandleWeaponOverlap);
+				UPrimitiveComponent* CollisionComponent = CollisionComponentPtr->Get();
+				CollisionComponent->OnComponentBeginOverlap.RemoveDynamic(this, &ThisClass::HandleWeaponOverlap);
 
 				ActiveWeaponMeshes.RemoveTag(SlotTag);
 			}
@@ -125,16 +129,16 @@ void UWeaponsComponent::CollectWeaponMeshes()
 	}
 
 	for (UActorComponent* OwnerComponent 
-		: Owner->GetComponentsByTag(UStaticMeshComponent::StaticClass(), WeaponMeshComponentTag))
+		: Owner->GetComponentsByTag(UPrimitiveComponent::StaticClass(), WeaponMeshComponentTag))
 	{
-		if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(OwnerComponent))
+		if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(OwnerComponent))
 		{
-			for (FName NameTag : StaticMeshComponent->ComponentTags)
+			for (FName NameTag : PrimitiveComponent->ComponentTags)
 			{
 				FGameplayTag GameplayTag = FGameplayTag::RequestGameplayTag(NameTag, false);
 				if (GameplayTag.IsValid() && GameplayTag.MatchesTag(WeaponsTags::Slot))
 				{
-					WeaponMeshesBySlot.Add(GameplayTag, StaticMeshComponent);
+					CollisionComponentsBySlot.Add(GameplayTag, PrimitiveComponent);
 					break;
 				}
 			}
@@ -162,7 +166,7 @@ void UWeaponsComponent::HandleWeaponOverlap_Implementation(
 	EventData.OptionalObject2 = OtherComp;
 
 	// Since this event is going to the owner, who already knows their tags, we use instigator tags for context tags.
-	if (const FGameplayTag* SlotTag = WeaponMeshesBySlot.FindKey(Cast<UStaticMeshComponent>(OverlappedComp)))
+	if (const FGameplayTag* SlotTag = CollisionComponentsBySlot.FindKey(Cast<UStaticMeshComponent>(OverlappedComp)))
 	{
 		EventData.InstigatorTags.AddTagFast(*SlotTag);
 	}
