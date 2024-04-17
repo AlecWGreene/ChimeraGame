@@ -22,6 +22,7 @@ public:
 #endif
 
 	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* TickFunction) override;
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
 	//----- Feature Methods -----//

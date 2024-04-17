@@ -2,12 +2,15 @@
 
 #include "WeaponsComponent.h"
 
+#include "Components/ShapeComponent.h"
 #include "Components/StaticMeshComponent.h"
 
 #include "ChimeraAbilitySystemComponent.h"
 #include "ChimeraGASFunctionLibrary.h"
 #include "WeaponData.h"
 #include "WeaponsTags.h"
+
+TAutoConsoleVariable<bool> CVar_Weapons_ShowCollision(TEXT("Weapons.Collision.Show"), false, TEXT(""));
 
 UWeaponsComponent::UWeaponsComponent()
 {
@@ -29,6 +32,11 @@ void UWeaponsComponent::BeginPlay()
 	AbilitySystemComponent = UChimeraGASFunctionLibrary::GetChimeraASC(GetOwner());
 
 	CollectWeaponMeshes();
+}
+
+void UWeaponsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* TickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, TickFunction);
 }
 
 void UWeaponsComponent::EndPlay(EEndPlayReason::Type Reason)
@@ -69,6 +77,12 @@ void UWeaponsComponent::ActivateWeapons(FGameplayTagContainer WeaponSlots)
 				UPrimitiveComponent* CollisionComponent = CollisionComponentPtr->Get();
 				CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HandleWeaponOverlap);
 
+				if (CVar_Weapons_ShowCollision.GetValueOnGameThread() && CollisionComponent->IsA<UShapeComponent>())
+				{
+					CollisionComponent->SetVisibility(true);
+					CollisionComponent->SetHiddenInGame(false);
+				}
+
 				ActiveWeaponMeshes.AddTag(SlotTag);
 			}
 			else
@@ -90,6 +104,12 @@ void UWeaponsComponent::DeactivateWeapons(FGameplayTagContainer WeaponSlots)
 			{
 				UPrimitiveComponent* CollisionComponent = CollisionComponentPtr->Get();
 				CollisionComponent->OnComponentBeginOverlap.RemoveDynamic(this, &ThisClass::HandleWeaponOverlap);
+
+				if (CVar_Weapons_ShowCollision.GetValueOnGameThread() && CollisionComponent->IsA<UShapeComponent>())
+				{
+					CollisionComponent->SetVisibility(false);
+					CollisionComponent->SetHiddenInGame(true);
+				}
 
 				ActiveWeaponMeshes.RemoveTag(SlotTag);
 			}
