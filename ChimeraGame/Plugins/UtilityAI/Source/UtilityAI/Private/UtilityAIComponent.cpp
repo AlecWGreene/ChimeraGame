@@ -101,12 +101,17 @@ FString UUtilityAIComponent::GetDebugInfoString() const
 	FString Output;
 	
 	// Display Actions
-	for (TPair<FGameplayTag, float> DesireData : ActionDesires)
+	TArray<FGameplayTag> KeyList;
+	ActionDesires.GetKeys(KeyList);
+
+	KeyList.Sort([this](const FGameplayTag& KeyA, const FGameplayTag& KeyB) { return ActionDesires[KeyA] > ActionDesires[KeyB]; });
+
+	for (const FGameplayTag& Key : KeyList)
 	{
-		const TObjectPtr<UUtilityAction>* DesireActionPtr = AvailableActions.Find(DesireData.Key);
+		const TObjectPtr<UUtilityAction>* DesireActionPtr = AvailableActions.Find(Key);
 		if (DesireActionPtr && *DesireActionPtr == ActiveAction)
 		{
-			Output += FString::Printf(TEXT("\t%s = %3f [Active]\n"), *DesireData.Key.ToString(), DesireData.Value);
+			Output += FString::Printf(TEXT("\t%s = %3f [Active]\n"), *Key.ToString(), ActionDesires[Key]);
 			for (const UGameplayTask* Task : ActiveAction->ActiveTasks)
 			{
 				Output += FString::Printf(TEXT("\t\t%s\n"), *GetNameSafe(Task));
@@ -114,7 +119,7 @@ FString UUtilityAIComponent::GetDebugInfoString() const
 		}
 		else
 		{
-			Output += FString::Printf(TEXT("\t%s = %3f\n"), *DesireData.Key.ToString(), DesireData.Value);
+			Output += FString::Printf(TEXT("\t%s = %3f\n"), *Key.ToString(), ActionDesires[Key]);
 		}
 	}
 
